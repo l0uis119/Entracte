@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Entracte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+/* ═══════════════════════════════
+   VARIABLES & RESET
+═══════════════════════════════ */
+:root {
+  --bg:        #FAF9F6;
+  --bg2:       #F3F1EC;
+  --surface:   #FFFFFF;
+  --border:    #E8E4DC;
+  --text:      #1A1714;
+  --text2:     #6B6560;
+  --muted:     #A8A29C;
+  --accent:    #C4392A;
+  --accent2:   #E8614F;
+  --gold:      #C4923A;
+  --radius:    14px;
+  --shadow:    0 2px 20px rgba(26,23,20,0.08);
+  --shadow-lg: 0 8px 48px rgba(26,23,20,0.14);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { height:100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ═══════════════════════════════
+   PAGE AUTH
+═══════════════════════════════ */
+#page-auth {
+  min-height: 100vh;
+  display: flex;
+  align-items: stretch;
+}
+
+.auth-visual {
+  flex: 1;
+  background: var(--text);
+  position: relative;
+  overflow: hidden;
+  display: none;
+}
+@media(min-width:768px){ .auth-visual { display:block; } }
+
+.auth-visual-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 30% 40%, rgba(196,57,42,0.25) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 80% at 80% 70%, rgba(196,146,58,0.15) 0%, transparent 60%),
+    #1A1714;
+}
+
+.auth-visual-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 48px;
+}
+
+.auth-tagline {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 52px;
+  font-weight: 300;
+  color: #FAF9F6;
+  line-height: 1.1;
+  margin-bottom: 16px;
+}
+.auth-tagline em {
+  font-style: italic;
+  color: var(--accent2);
+}
+
+.auth-sub {
+  font-size: 14px;
+  color: rgba(250,249,246,0.5);
+  letter-spacing: 0.3px;
+  line-height: 1.6;
+  max-width: 280px;
+}
+
+/* Rideau décoratif */
+.curtain-left, .curtain-right {
+  position: absolute;
+  top: 0;
+  width: 90px;
+  height: 100%;
+  opacity: 0.12;
+}
+.curtain-left {
+  left: 0;
+  background: linear-gradient(to right, var(--accent), transparent);
+}
+.curtain-right {
+  right: 0;
+  background: linear-gradient(to left, var(--accent), transparent);
+}
+
+/* Lumières de scène */
+.stage-light {
+  position: absolute;
+  top: -60px;
+  width: 3px;
+  height: 180px;
+  background: linear-gradient(to bottom, rgba(255,220,120,0.6), transparent);
+  border-radius: 2px;
+}
+.stage-light:nth-child(1) { left: 25%; transform: rotate(8deg); }
+.stage-light:nth-child(2) { left: 45%; }
+.stage-light:nth-child(3) { left: 65%; transform: rotate(-6deg); }
+.stage-light:nth-child(4) { left: 80%; transform: rotate(5deg); }
+
+.auth-form-side {
+  width: 100%;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 40px 36px;
+  background: var(--surface);
+}
+
+.auth-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 32px;
+  font-weight: 300;
+  color: var(--text);
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+.auth-logo span { color: var(--accent); font-style: italic; }
+
+.auth-welcome {
+  font-size: 13px;
+  color: var(--text2);
+  margin-bottom: 36px;
+}
+
+/* Tabs */
+.auth-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 28px;
+  border-bottom: 1.5px solid var(--border);
+}
+.auth-tab {
+  flex: 1;
+  padding: 10px 0;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1.5px;
+  transition: all .2s;
+  user-select: none;
+}
+.auth-tab.active {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}
+
+/* Champs */
+.field {
+  margin-bottom: 16px;
+}
+.field label {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text2);
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.field input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  outline: none;
+  transition: border-color .2s;
+}
+.field input:focus {
+  border-color: var(--accent);
+  background: var(--surface);
+}
+.field input::placeholder { color: var(--muted); }
+
+/* Bouton principal */
+.btn-primary {
+  width: 100%;
+  padding: 13px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all .2s;
+  margin-top: 8px;
+  letter-spacing: 0.2px;
+}
+.btn-primary:hover { background: var(--accent2); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(196,57,42,0.3); }
+.btn-primary:active { transform: translateY(0); }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.auth-error {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: rgba(196,57,42,0.08);
+  border: 1px solid rgba(196,57,42,0.2);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--accent);
+  display: none;
+}
+.auth-error.show { display: block; }
+
+/* ═══════════════════════════════
+   PAGE PRINCIPALE
+═══════════════════════════════ */
+#page-main { display: none; flex-direction: column; min-height: 100vh; }
+#page-main.active { display: flex; }
+
+/* NAV */
+nav {
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px;
+  font-weight: 300;
+  color: var(--text);
+  letter-spacing: -0.3px;
+}
+.nav-logo span { color: var(--accent); font-style: italic; }
+
+.nav-actions { display: flex; align-items: center; gap: 10px; }
+
+.nav-btn {
+  padding: 7px 16px;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all .2s;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--text2);
+}
+.nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.nav-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color .2s;
+}
+.nav-avatar:hover { border-color: var(--accent); }
+
+/* HERO */
+.hero {
+  padding: 40px 24px 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.hero-greeting {
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 0.3px;
+  margin-bottom: 6px;
+}
+
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 38px;
+  font-weight: 300;
+  color: var(--text);
+  line-height: 1.15;
+  margin-bottom: 20px;
+}
+.hero-title em { font-style: italic; color: var(--accent); }
+
+/* Barre de recherche */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 16px;
+  max-width: 520px;
+  transition: border-color .2s, box-shadow .2s;
+}
+.search-bar:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(196,57,42,0.08);
+}
+.search-bar svg { color: var(--muted); flex-shrink: 0; }
+.search-bar input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--text);
+  outline: none;
+}
+.search-bar input::placeholder { color: var(--muted); }
+
+/* FILTRES */
+.filters {
+  padding: 16px 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-chip {
+  padding: 6px 14px;
+  border-radius: 100px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all .2s;
+  user-select: none;
+}
+.filter-chip:hover { border-color: var(--accent); color: var(--accent); }
+.filter-chip.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+/* SECTION TITRE */
+.section {
+  padding: 8px 24px 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  font-weight: 400;
+  color: var(--text);
+}
+
+.section-sub {
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* GRILLE DE CARTES */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+/* CARTE SPECTACLE */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all .25s;
+  animation: fadeUp .4s ease both;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: transparent;
+}
+
+@keyframes fadeUp {
+  from { opacity:0; transform: translateY(16px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+.card-poster {
+  width: 100%;
+  aspect-ratio: 2/3;
+  background: var(--bg2);
+  position: relative;
+  overflow: hidden;
+}
+.card-poster img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform .4s;
+}
+.card:hover .card-poster img { transform: scale(1.04); }
+
+/* Placeholder affiche */
+.card-poster-placeholder {
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(135deg, var(--bg2), var(--border));
+}
+.card-poster-placeholder .pp-icon {
+  font-size: 32px;
+  opacity: 0.4;
+}
+.card-poster-placeholder .pp-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14px;
+  font-style: italic;
+  color: var(--text2);
+  text-align: center;
+  padding: 0 12px;
+}
+
+.card-genre {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 3px 10px;
+  border-radius: 100px;
+  background: rgba(250,249,246,0.92);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: 0.3px;
+  backdrop-filter: blur(4px);
+}
+
+.card-body {
+  padding: 14px 15px 15px;
+}
+.card-titre {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 17px;
+  font-weight: 400;
+  color: var(--text);
+  line-height: 1.25;
+  margin-bottom: 4px;
+}
+.card-auteur {
+  font-size: 12px;
+  color: var(--text2);
+  margin-bottom: 10px;
+}
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.card-theatre {
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.card-note {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  color: var(--gold);
+  font-weight: 500;
+}
+
+/* Distance badge */
+.card-distance {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  padding: 3px 9px;
+  border-radius: 100px;
+  background: rgba(26,23,20,0.75);
+  font-size: 10px;
+  color: rgba(250,249,246,0.9);
+  backdrop-filter: blur(4px);
+}
+
+/* ÉTAT VIDE */
+.empty-state {
+  grid-column: 1/-1;
+  text-align: center;
+  padding: 60px 20px;
+}
+.empty-state .es-icon { font-size: 40px; margin-bottom: 14px; opacity: 0.4; }
+.empty-state .es-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 300;
+  color: var(--text2);
+  margin-bottom: 8px;
+}
+.empty-state .es-sub { font-size: 13px; color: var(--muted); }
+
+/* BANNER GEO */
+.geo-banner {
+  margin: 0 24px 0;
+  max-width: 1052px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 12px 16px;
+  background: rgba(196,146,58,0.08);
+  border: 1px solid rgba(196,146,58,0.25);
+  border-radius: 10px;
+  font-size: 13px;
+  color: var(--gold);
+  display: none;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.geo-banner.show { display: flex; }
+.geo-banner button {
+  margin-left: auto;
+  padding: 5px 12px;
+  border-radius: 7px;
+  border: 1px solid rgba(196,146,58,0.4);
+  background: transparent;
+  font-size: 12px;
+  color: var(--gold);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+}
+.geo-banner button:hover { background: rgba(196,146,58,0.1); }
+
+/* TOAST */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--text);
+  color: var(--bg);
+  padding: 10px 20px;
+  border-radius: 100px;
+  font-size: 13px;
+  opacity: 0;
+  transition: all .3s;
+  pointer-events: none;
+  z-index: 9999;
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* LOADER */
+.loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  grid-column: 1/-1;
+}
+.loader-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin: 0 3px;
+  animation: bounce .9s infinite ease-in-out;
+}
+.loader-dot:nth-child(2) { animation-delay: .15s; }
+.loader-dot:nth-child(3) { animation-delay: .3s; }
+@keyframes bounce {
+  0%,80%,100% { transform: scale(0.6); opacity:0.4; }
+  40% { transform: scale(1); opacity:1; }
+}
+
+/* BOTTOM NAV mobile */
+.bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 60px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+@media(max-width:640px) {
+  .bottom-nav { display: flex; }
+  body { padding-bottom: 60px; }
+}
+.bn-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-size: 10px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color .2s;
+}
+.bn-item.active { color: var(--accent); }
+.bn-item svg { width: 20px; height: 20px; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ PAGE AUTH ═══════════ -->
+<div id="page-auth">
+  <div class="auth-visual">
+    <div class="auth-visual-bg"></div>
+    <div class="stage-light"></div>
+    <div class="stage-light"></div>
+    <div class="stage-light"></div>
+    <div class="stage-light"></div>
+    <div class="curtain-left"></div>
+    <div class="curtain-right"></div>
+    <div class="auth-visual-content">
+      <div class="auth-tagline">Le théâtre,<br><em>votre histoire.</em></div>
+      <p class="auth-sub">Retrouvez tous les spectacles près de chez vous, gardez la mémoire de ce que vous avez vécu.</p>
+    </div>
+  </div>
+
+  <div class="auth-form-side">
+    <div class="auth-logo">entr<span>acte</span></div>
+    <p class="auth-welcome">Votre journal du spectacle vivant</p>
+
+    <div class="auth-tabs">
+      <div class="auth-tab active" onclick="switchTab('login')">Connexion</div>
+      <div class="auth-tab" onclick="switchTab('signup')">Inscription</div>
+    </div>
+
+    <div id="form-login">
+      <div class="field">
+        <label>Adresse e-mail</label>
+        <input type="email" id="login-email" placeholder="vous@exemple.fr" autocomplete="email">
+      </div>
+      <div class="field">
+        <label>Mot de passe</label>
+        <input type="password" id="login-pw" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="btn-primary" onclick="doLogin()">Se connecter</button>
+    </div>
+
+    <div id="form-signup" style="display:none">
+      <div class="field">
+        <label>Adresse e-mail</label>
+        <input type="email" id="signup-email" placeholder="vous@exemple.fr" autocomplete="email">
+      </div>
+      <div class="field">
+        <label>Mot de passe</label>
+        <input type="password" id="signup-pw" placeholder="8 caractères minimum" autocomplete="new-password">
+      </div>
+      <button class="btn-primary" onclick="doSignup()">Créer mon compte</button>
+    </div>
+
+    <div class="auth-error" id="auth-error"></div>
+  </div>
+</div>
+
+<!-- ═══════════ PAGE PRINCIPALE ═══════════ -->
+<div id="page-main">
+  <nav>
+    <div class="nav-logo">entr<span>acte</span></div>
+    <div class="nav-actions">
+      <button class="nav-btn" onclick="doLogout()">Déconnexion</button>
+      <div class="nav-avatar" id="nav-avatar">?</div>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <p class="hero-greeting" id="hero-greeting">Bonsoir</p>
+    <h1 class="hero-title">Que joue-t-on<br><em>près de chez vous ?</em></h1>
+    <div class="search-bar">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="search-input" placeholder="Titre, auteur, théâtre…" oninput="filterCards()">
+    </div>
+  </div>
+
+  <div class="filters">
+    <div class="filter-chip active" onclick="setFilter(this,'')">Tout</div>
+    <div class="filter-chip" onclick="setFilter(this,'Comédie')">Comédie</div>
+    <div class="filter-chip" onclick="setFilter(this,'Drame')">Drame</div>
+    <div class="filter-chip" onclick="setFilter(this,'Contemporain')">Contemporain</div>
+    <div class="filter-chip" onclick="setFilter(this,'Classique')">Classique</div>
+    <div class="filter-chip" onclick="setFilter(this,'Jeune public')">Jeune public</div>
+  </div>
+
+  <div class="geo-banner" id="geo-banner">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2a10 10 0 0 1 0 20A10 10 0 0 1 12 2z" opacity=".3"/><path d="M12 8v.01M12 16v.01M8 12h.01M16 12h.01"/></svg>
+    Activez la localisation pour voir les spectacles près de chez vous
+    <button onclick="requestGeo()">Activer</button>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title" id="section-title">Spectacles à l'affiche</h2>
+      <span class="section-sub" id="section-sub">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+        <span id="geo-label">Paris et environs</span>
+      </span>
+    </div>
+    <div class="cards-grid" id="cards-grid">
+      <div class="loader">
+        <div class="loader-dot"></div>
+        <div class="loader-dot"></div>
+        <div class="loader-dot"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom nav mobile -->
+<div class="bottom-nav">
+  <div class="bn-item active">
+    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+    Accueil
+  </div>
+  <div class="bn-item">
+    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    Recherche
+  </div>
+  <div class="bn-item">
+    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+    Journal
+  </div>
+  <div class="bn-item">
+    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Profil
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  CONFIG SUPABASE — Remplace par tes vraies clés
+// ═══════════════════════════════════════════════
+const SUPABASE_URL = 'REMPLACE_PAR_TON_URL_SUPABASE';
+const SUPABASE_KEY = 'REMPLACE_PAR_TA_CLE_ANON_SUPABASE';
+const supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ═══════════════════════════════════════════════
+//  ÉTAT GLOBAL
+// ═══════════════════════════════════════════════
+let currentUser  = null;
+let allPieces    = [];
+let userCoords   = null;
+let activeFilter = '';
+
+// ═══════════════════════════════════════════════
+//  AUTH
+// ═══════════════════════════════════════════════
+function switchTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t,i) => {
+    t.classList.toggle('active', (i===0) === (tab==='login'));
+  });
+  document.getElementById('form-login').style.display  = tab==='login'  ? '' : 'none';
+  document.getElementById('form-signup').style.display = tab==='signup' ? '' : 'none';
+  hideError();
+}
+
+function showError(msg) {
+  const el = document.getElementById('auth-error');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+function hideError() {
+  document.getElementById('auth-error').classList.remove('show');
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pw    = document.getElementById('login-pw').value;
+  if (!email || !pw) return showError('Remplissez tous les champs.');
+  const btn = document.querySelector('#form-login .btn-primary');
+  btn.disabled = true; btn.textContent = 'Connexion…';
+  const { error } = await supa.auth.signInWithPassword({ email, password: pw });
+  btn.disabled = false; btn.textContent = 'Se connecter';
+  if (error) return showError('Email ou mot de passe incorrect.');
+}
+
+async function doSignup() {
+  const email = document.getElementById('signup-email').value.trim();
+  const pw    = document.getElementById('signup-pw').value;
+  if (!email || !pw) return showError('Remplissez tous les champs.');
+  if (pw.length < 8) return showError('Le mot de passe doit faire au moins 8 caractères.');
+  const btn = document.querySelector('#form-signup .btn-primary');
+  btn.disabled = true; btn.textContent = 'Création…';
+  const { error } = await supa.auth.signUp({ email, password: pw });
+  btn.disabled = false; btn.textContent = 'Créer mon compte';
+  if (error) return showError('Erreur : ' + error.message);
+  toast('📧 Vérifiez vos e-mails pour confirmer votre compte !');
+}
+
+async function doLogout() {
+  await supa.auth.signOut();
+  currentUser = null;
+  allPieces   = [];
+  document.getElementById('page-main').classList.remove('active');
+  document.getElementById('page-auth').style.display = 'flex';
+}
+
+// ═══════════════════════════════════════════════
+//  APRÈS CONNEXION
+// ═══════════════════════════════════════════════
+async function onSignIn(user) {
+  currentUser = user;
+  document.getElementById('page-auth').style.display = 'none';
+  document.getElementById('page-main').classList.add('active');
+
+  // Avatar initiales
+  const pseudo = user.email.split('@')[0];
+  document.getElementById('nav-avatar').textContent = pseudo[0].toUpperCase();
+
+  // Salutation selon l'heure
+  const h = new Date().getHours();
+  const greeting = h < 12 ? 'Bonjour' : h < 18 ? 'Bon après-midi' : 'Bonsoir';
+  document.getElementById('hero-greeting').textContent = `${greeting}, ${pseudo}`;
+
+  // Géoloc + chargement
+  tryGeoThenLoad();
+}
+
+// ═══════════════════════════════════════════════
+//  GÉOLOCALISATION
+// ═══════════════════════════════════════════════
+function tryGeoThenLoad() {
+  if (!navigator.geolocation) {
+    loadPieces();
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      userCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      document.getElementById('geo-label').textContent = 'Près de vous';
+      document.getElementById('geo-banner').classList.remove('show');
+      loadPieces();
+    },
+    () => {
+      document.getElementById('geo-banner').classList.add('show');
+      loadPieces();
+    },
+    { timeout: 5000 }
+  );
+}
+
+function requestGeo() {
+  navigator.geolocation?.getCurrentPosition(pos => {
+    userCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+    document.getElementById('geo-label').textContent = 'Près de vous';
+    document.getElementById('geo-banner').classList.remove('show');
+    toast('📍 Localisation activée !');
+    renderCards(allPieces);
+  });
+}
+
+// ═══════════════════════════════════════════════
+//  CHARGEMENT DES PIÈCES
+// ═══════════════════════════════════════════════
+async function loadPieces() {
+  const grid = document.getElementById('cards-grid');
+  grid.innerHTML = `<div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>`;
+
+  const { data, error } = await supa
+    .from('pieces')
+    .select(`
+      id, titre, auteur, genre, affiche_url,
+      representations (
+        theatre_id, date_debut, date_fin, lien_reservation, prix_min,
+        theatres ( nom, ville, latitude, longitude )
+      )
+    `)
+    .order('created_at', { ascending: false })
+    .limit(40);
+
+  if (error) {
+    grid.innerHTML = `<div class="empty-state"><div class="es-icon">⚠️</div><div class="es-title">Erreur de chargement</div><div class="es-sub">${error.message}</div></div>`;
+    return;
+  }
+
+  allPieces = data || [];
+  renderCards(allPieces);
+}
+
+// ═══════════════════════════════════════════════
+//  RENDU DES CARTES
+// ═══════════════════════════════════════════════
+function renderCards(pieces) {
+  const grid = document.getElementById('cards-grid');
+
+  // Filtres
+  const search = document.getElementById('search-input').value.toLowerCase();
+  let filtered = pieces.filter(p => {
+    const matchGenre  = !activeFilter || p.genre === activeFilter;
+    const matchSearch = !search
+      || p.titre?.toLowerCase().includes(search)
+      || p.auteur?.toLowerCase().includes(search);
+    return matchGenre && matchSearch;
+  });
+
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="empty-state">
+      <div class="es-icon">🎭</div>
+      <div class="es-title">Aucun spectacle trouvé</div>
+      <div class="es-sub">Essayez un autre filtre ou ajoutez des spectacles dans Supabase.</div>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map((p, i) => cardHTML(p, i)).join('');
+}
+
+function cardHTML(p, i) {
+  const rep     = p.representations?.[0];
+  const theatre = rep?.theatres;
+  const dist    = userCoords && theatre?.latitude ? distKm(userCoords, theatre) : null;
+
+  const posterContent = p.affiche_url
+    ? `<img src="${p.affiche_url}" alt="${p.titre}" loading="lazy">`
+    : `<div class="card-poster-placeholder">
+        <div class="pp-icon">🎭</div>
+        <div class="pp-title">${p.titre}</div>
+       </div>`;
+
+  const distBadge = dist !== null
+    ? `<div class="card-distance">${dist < 1 ? Math.round(dist*1000)+'m' : dist.toFixed(1)+'km'}</div>`
+    : '';
+
+  const prix = rep?.prix_min ? `À partir de ${rep.prix_min}€` : '';
+
+  return `
+  <div class="card" style="animation-delay:${i*0.05}s" onclick="openPiece('${p.id}')">
+    <div class="card-poster">
+      ${posterContent}
+      ${p.genre ? `<div class="card-genre">${p.genre}</div>` : ''}
+      ${distBadge}
+    </div>
+    <div class="card-body">
+      <div class="card-titre">${p.titre}</div>
+      ${p.auteur ? `<div class="card-auteur">${p.auteur}</div>` : ''}
+      <div class="card-footer">
+        <div class="card-theatre">
+          <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          ${theatre ? theatre.nom : '—'}
+        </div>
+        ${prix ? `<div style="font-size:11px;color:var(--text2)">${prix}</div>` : ''}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════
+//  FILTRES & RECHERCHE
+// ═══════════════════════════════════════════════
+function setFilter(el, genre) {
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  activeFilter = genre;
+  filterCards();
+}
+
+function filterCards() { renderCards(allPieces); }
+
+// ═══════════════════════════════════════════════
+//  DISTANCE (formule Haversine)
+// ═══════════════════════════════════════════════
+function distKm(from, to) {
+  const R = 6371;
+  const dLat = (to.latitude  - from.lat) * Math.PI / 180;
+  const dLng = (to.longitude - from.lng) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2
+    + Math.cos(from.lat*Math.PI/180) * Math.cos(to.latitude*Math.PI/180)
+    * Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+// ═══════════════════════════════════════════════
+//  OUVRIR UNE PIÈCE (à construire)
+// ═══════════════════════════════════════════════
+function openPiece(id) {
+  toast('Page détail — bientôt disponible !');
+}
+
+// ═══════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ═══════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', async () => {
+  // Touche Entrée sur les champs
+  document.getElementById('login-pw').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+  document.getElementById('signup-pw').addEventListener('keydown', e => { if(e.key==='Enter') doSignup(); });
+
+  // Vérifier session existante
+  const { data: { session } } = await supa.auth.getSession();
+  if (session?.user) {
+    await onSignIn(session.user);
+  }
+
+  // Écouter les changements d'auth
+  supa.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session?.user && !currentUser) {
+      await onSignIn(session.user);
+    }
+    if (event === 'SIGNED_OUT') {
+      currentUser = null;
+    }
+  });
+});
+</script>
+</body>
+</html>
