@@ -5,307 +5,234 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Entracte — Spectacle</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Lora:ital,wght@0,400;0,500;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
 :root{
-  --creme:#F5F0E8;--creme2:#EDE6D6;--creme3:#E2D9C5;
-  --rouge:#B8311F;--rouge2:#D94030;--or:#C9912A;
-  --noir:#1C1410;--brun:#5C4033;--brun2:#7A5C48;--muted:#9C8070;
+  --blanc:#FFFFFF;--noir:#111111;--gris:#F7F7F7;--gris2:#EEEEEE;--gris3:#CCCCCC;
+  --texte2:#666666;--muted:#AAAAAA;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-html{height:100%;}
-body{background:var(--creme);color:var(--noir);font-family:'Lora',serif;min-height:100vh;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"),linear-gradient(160deg,#F7F2EA 0%,#EFE8D7 100%);}
+body{background:var(--blanc);color:var(--noir);font-family:'Nunito',sans-serif;font-weight:700;min-height:100vh;}
 
-/* NAV */
-nav{height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:var(--noir);position:sticky;top:0;z-index:100;border-bottom:2px solid var(--rouge);}
-.nav-logo{font-family:'Playfair Display',serif;font-size:28px;font-weight:900;font-style:italic;color:var(--creme);letter-spacing:-.5px;text-decoration:none;}
-.nav-logo em{font-style:normal;color:var(--rouge2);}
-.nav-retour{display:flex;align-items:center;gap:8px;font-family:'Libre Baskerville',serif;font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:rgba(245,240,232,.5);cursor:pointer;border:none;background:none;transition:color .2s;}
-.nav-retour:hover{color:var(--creme);}
+nav{height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 36px;background:var(--blanc);border-bottom:2px solid var(--gris2);position:sticky;top:0;z-index:100;}
+.nav-logo{font-size:22px;font-weight:900;color:var(--noir);letter-spacing:4px;text-transform:uppercase;text-decoration:none;}
+.nav-retour{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);cursor:pointer;border:none;background:none;font-family:'Nunito',sans-serif;transition:color .2s;}
+.nav-retour:hover{color:var(--noir);}
 .nav-retour svg{width:16px;height:16px;}
 
-/* LOADER */
 .loader-page{display:flex;align-items:center;justify-content:center;min-height:60vh;}
-.lp{width:8px;height:8px;border-radius:50%;background:var(--rouge);margin:0 4px;animation:rebond 1s infinite ease-in-out;}
-.lp:nth-child(2){animation-delay:.15s;background:var(--or);}
+.lp{width:10px;height:10px;border-radius:50%;background:var(--gris2);margin:0 4px;animation:rebond 1s infinite ease-in-out;}
+.lp:nth-child(2){animation-delay:.15s;}
 .lp:nth-child(3){animation-delay:.3s;}
-@keyframes rebond{0%,80%,100%{transform:scale(.5);opacity:.3;}40%{transform:scale(1.1);opacity:1;}}
+@keyframes rebond{0%,80%,100%{transform:scale(.4);opacity:.4;}40%{transform:scale(1);opacity:1;}}
 
 /* HERO */
-.hero-piece{position:relative;overflow:hidden;}
-.hero-bg{position:absolute;inset:0;background:var(--noir);}
-.hero-bg-img{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.25;filter:blur(20px) saturate(0.5);}
-.hero-bg-gradient{position:absolute;inset:0;background:linear-gradient(to bottom, rgba(28,20,16,.3) 0%, rgba(28,20,16,.95) 100%);}
-.hero-piece-inner{position:relative;z-index:2;display:flex;gap:36px;padding:48px 40px;align-items:flex-end;max-width:1000px;margin:0 auto;}
-@media(max-width:640px){.hero-piece-inner{flex-direction:column;padding:28px 20px;align-items:flex-start;}}
+.hero-piece{background:var(--noir);position:relative;overflow:hidden;}
+.hero-bg-img{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.2;filter:blur(24px) saturate(.4);}
+.hero-bg-grad{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(17,17,17,.2) 0%,rgba(17,17,17,.98) 100%);}
+.hero-inner{position:relative;z-index:2;display:flex;gap:40px;padding:56px 40px;align-items:flex-end;max-width:1000px;margin:0 auto;}
+@media(max-width:640px){.hero-inner{flex-direction:column;padding:32px 20px;align-items:flex-start;}}
 
-.affiche-grande{width:200px;flex-shrink:0;aspect-ratio:2/3;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6);border:2px solid rgba(245,240,232,.1);}
+.affiche-grande{width:200px;flex-shrink:0;aspect-ratio:2/3;border-radius:16px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.6);}
 @media(max-width:640px){.affiche-grande{width:130px;}}
 .affiche-grande img{width:100%;height:100%;object-fit:cover;}
-.affiche-ph{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#2E241C,#1C1410);}
-.affiche-ph-ico{font-size:36px;opacity:.4;}
-.affiche-ph-titre{font-family:'Playfair Display',serif;font-size:13px;font-style:italic;color:rgba(245,240,232,.5);text-align:center;padding:0 12px;}
+.affiche-ph{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:#222;}
+.affiche-ph-ico{font-size:36px;opacity:.3;}
+.affiche-ph-titre{font-size:13px;font-weight:800;color:rgba(255,255,255,.3);text-align:center;padding:0 12px;letter-spacing:.5px;}
 
 .hero-infos{flex:1;min-width:0;padding-bottom:4px;}
-.hero-genre{display:inline-block;padding:3px 12px;border-radius:100px;background:rgba(201,145,42,.2);border:1px solid rgba(201,145,42,.4);font-family:'Libre Baskerville',serif;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--or);margin-bottom:14px;}
-.hero-titre{font-family:'Playfair Display',serif;font-size:42px;font-weight:900;font-style:italic;color:var(--creme);line-height:1.05;margin-bottom:8px;}
-@media(max-width:640px){.hero-titre{font-size:28px;}}
-.hero-auteur{font-family:'Lora',serif;font-size:17px;font-style:italic;color:rgba(245,240,232,.6);margin-bottom:16px;}
-.hero-note{display:flex;align-items:center;gap:8px;margin-bottom:20px;}
+.hero-genre{display:inline-block;padding:5px 14px;border-radius:100px;border:2px solid rgba(255,255,255,.2);font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:16px;}
+.hero-titre{font-size:44px;font-weight:900;color:var(--blanc);line-height:.95;margin-bottom:10px;letter-spacing:-1px;}
+@media(max-width:640px){.hero-titre{font-size:30px;}}
+.hero-auteur{font-size:16px;font-weight:600;color:rgba(255,255,255,.5);margin-bottom:20px;}
+.hero-note{display:flex;align-items:center;gap:8px;margin-bottom:24px;}
 .etoiles{display:flex;gap:2px;}
 .etoile{font-size:18px;}
-.note-chiffre{font-family:'Libre Baskerville',serif;font-size:14px;font-weight:700;color:var(--or);}
-.note-count{font-size:12px;color:rgba(245,240,232,.4);}
+.note-chiffre{font-size:15px;font-weight:900;color:#FFD700;}
+.note-count{font-size:13px;font-weight:700;color:rgba(255,255,255,.3);}
 
 .hero-actions{display:flex;gap:10px;flex-wrap:wrap;}
-.btn-reserver{padding:12px 24px;background:var(--rouge);color:var(--creme);border-radius:8px;font-family:'Libre Baskerville',serif;font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;text-decoration:none;transition:all .2s;border:none;cursor:pointer;}
-.btn-reserver:hover{background:var(--rouge2);transform:translateY(-1px);}
-.btn-journal{padding:12px 18px;border-radius:8px;border:1.5px solid rgba(245,240,232,.25);background:transparent;font-family:'Libre Baskerville',serif;font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:rgba(245,240,232,.7);cursor:pointer;transition:all .2s;}
-.btn-journal:hover{border-color:var(--or);color:var(--or);}
-.btn-journal.vu{background:rgba(201,145,42,.15);border-color:var(--or);color:var(--or);}
+.btn-reserver{padding:13px 26px;background:var(--blanc);color:var(--noir);border-radius:100px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:900;letter-spacing:1px;text-transform:uppercase;text-decoration:none;transition:all .2s;border:none;cursor:pointer;}
+.btn-reserver:hover{opacity:.85;transform:translateY(-1px);}
+.btn-journal{padding:13px 20px;border-radius:100px;border:2px solid rgba(255,255,255,.25);background:transparent;font-family:'Nunito',sans-serif;font-size:13px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.7);cursor:pointer;transition:all .2s;}
+.btn-journal:hover{border-color:rgba(255,255,255,.6);color:var(--blanc);}
+.btn-journal.vu{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.5);color:var(--blanc);}
 
 /* BODY */
-.piece-body{max-width:1000px;margin:0 auto;padding:0 40px 60px;}
-@media(max-width:640px){.piece-body{padding:0 20px 60px;}}
+.piece-body{max-width:1000px;margin:0 auto;padding:0 40px 80px;}
+@media(max-width:640px){.piece-body{padding:0 20px 80px;}}
 
-.info-band{display:flex;gap:0;border-bottom:2px solid var(--creme3);margin-bottom:40px;}
-.info-bloc{flex:1;padding:24px 20px;border-right:1px solid var(--creme3);}
+.info-band{display:flex;gap:0;border-bottom:2px solid var(--gris2);margin-bottom:40px;}
+.info-bloc{flex:1;padding:24px 20px;border-right:1px solid var(--gris2);}
 .info-bloc:last-child{border-right:none;}
-.info-label{font-family:'Libre Baskerville',serif;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
-.info-val{font-family:'Playfair Display',serif;font-size:16px;font-style:italic;color:var(--noir);line-height:1.3;}
-.info-val-sm{font-size:13px;}
-@media(max-width:600px){.info-band{flex-direction:column;}.info-bloc{border-right:none;border-bottom:1px solid var(--creme3);padding:16px 0;}}
+.info-label{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.info-val{font-size:16px;font-weight:900;color:var(--noir);line-height:1.3;letter-spacing:-.3px;}
+.info-val-sm{font-size:14px;}
+@media(max-width:600px){.info-band{flex-direction:column;}.info-bloc{border-right:none;border-bottom:1px solid var(--gris2);padding:16px 0;}}
 
-.section{margin-bottom:40px;}
-.section-titre{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;font-style:italic;color:var(--noir);margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--creme3);}
-.description{font-family:'Lora',serif;font-size:15px;line-height:1.85;color:var(--brun);font-style:italic;}
+.section{margin-bottom:48px;}
+.section-titre{font-size:22px;font-weight:900;color:var(--noir);margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid var(--gris2);letter-spacing:-.5px;}
+.description{font-size:16px;font-weight:600;color:var(--texte2);line-height:1.75;}
 
-/* FORMULAIRE AVIS */
-.avis-form{background:#FFFDF8;border-radius:12px;padding:24px;border:1px solid var(--creme3);}
-.avis-form-titre{font-family:'Libre Baskerville',serif;font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--brun);margin-bottom:14px;}
-.etoiles-form{display:flex;gap:6px;margin-bottom:14px;}
-.etoile-btn{font-size:32px;cursor:pointer;transition:transform .15s;color:var(--creme3);}
+/* AVIS FORM */
+.avis-form{background:var(--gris);border-radius:16px;padding:24px;}
+.avis-form-label{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.etoiles-form{display:flex;gap:6px;margin-bottom:16px;}
+.etoile-btn{font-size:32px;cursor:pointer;transition:transform .15s;color:var(--gris2);line-height:1;}
 .etoile-btn:hover{transform:scale(1.2);}
-.etoile-btn.actif{color:var(--or);}
-textarea.avis-inp{width:100%;padding:12px 14px;border:1.5px solid var(--creme3);border-radius:8px;background:var(--creme);font-family:'Lora',serif;font-size:14px;font-style:italic;color:var(--noir);outline:none;resize:vertical;min-height:90px;transition:border-color .2s;margin-bottom:12px;}
-textarea.avis-inp:focus{border-color:var(--rouge);}
-.btn-publier{padding:11px 22px;background:var(--rouge);color:var(--creme);border:none;border-radius:8px;font-family:'Libre Baskerville',serif;font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
-.btn-publier:hover{background:var(--rouge2);}
+.etoile-btn.actif{color:#FFD700;}
+textarea.avis-inp{width:100%;padding:14px 16px;border:2px solid var(--gris2);border-radius:12px;background:var(--blanc);font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;color:var(--noir);outline:none;resize:vertical;min-height:90px;transition:border-color .2s;margin-bottom:14px;}
+textarea.avis-inp:focus{border-color:var(--noir);}
+.btn-publier{padding:12px 24px;background:var(--noir);color:var(--blanc);border:none;border-radius:100px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:900;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.btn-publier:hover{opacity:.8;}
 
-/* LISTE AVIS */
-.avis-liste{display:flex;flex-direction:column;gap:0;}
-.avis-card{padding:20px 0;border-bottom:1px solid var(--creme2);}
+/* AVIS LISTE */
+.avis-card{padding:20px 0;border-bottom:1px solid var(--gris2);}
 .avis-card:last-child{border-bottom:none;}
 .avis-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
-.avis-pseudo{font-family:'Libre Baskerville',serif;font-size:14px;font-weight:700;color:var(--noir);}
+.avis-pseudo{font-size:15px;font-weight:900;color:var(--noir);}
 .avis-etoiles{display:flex;gap:1px;}
 .avis-etoile{font-size:14px;}
-.avis-date{font-size:11px;color:var(--muted);margin-left:auto;font-family:'Libre Baskerville',serif;}
-.avis-texte{font-family:'Lora',serif;font-size:14px;font-style:italic;color:var(--brun);line-height:1.65;}
-.avis-vide{font-family:'Lora',serif;font-size:15px;font-style:italic;color:var(--muted);text-align:center;padding:40px 0;}
+.avis-date{font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--muted);margin-left:auto;}
+.avis-texte{font-size:15px;font-weight:600;color:var(--texte2);line-height:1.6;}
+.avis-vide{font-size:15px;font-weight:700;color:var(--muted);text-align:center;padding:40px 0;}
 
-/* TOAST */
-.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--noir);color:var(--creme);padding:11px 22px;border-radius:100px;font-family:'Libre Baskerville',serif;font-size:13px;opacity:0;transition:all .3s;pointer-events:none;z-index:9999;white-space:nowrap;border:1px solid rgba(245,240,232,.15);}
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--noir);color:var(--blanc);padding:12px 24px;border-radius:100px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;opacity:0;transition:all .3s;pointer-events:none;z-index:9999;white-space:nowrap;}
 .toast.ok{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
 
 <nav>
-  <a href="index.html" class="nav-logo">entr<em>acte</em></a>
+  <a href="index.html" class="nav-logo">Entracte</a>
   <button class="nav-retour" onclick="history.back()">
-    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
     Retour
   </button>
 </nav>
 
 <div id="contenu">
-  <div class="loader-page">
-    <div class="lp"></div><div class="lp"></div><div class="lp"></div>
-  </div>
+  <div class="loader-page"><div class="lp"></div><div class="lp"></div><div class="lp"></div></div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const SUPABASE_URL = 'https://dgnmqlwjfedhndftqdlp.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnbm1xbHdqZmVkaG5kZnRxZGxwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTUwNDcsImV4cCI6MjA4OTA5MTA0N30.w_D2a89bmgJu6hBtIG7Y62sAULyuEsx7gBcmGfLGzKE';
-const supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-let user = null;
-let noteSelectionnee = 0;
-let pieceId = null;
+const SUPABASE_URL='https://dgnmqlwjfedhndftqdlp.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnbm1xbHdqZmVkaG5kZnRxZGxwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTUwNDcsImV4cCI6MjA4OTA5MTA0N30.w_D2a89bmgJu6hBtIG7Y62sAULyuEsx7gBcmGfLGzKE';
+const supa=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let user=null,noteSelectionnee=0,pieceId=null;
 
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('ok');setTimeout(()=>t.classList.remove('ok'),2600);}
-
-function etoilesHTML(n, taille='16px'){
-  return [1,2,3,4,5].map(i =>
-    `<span class="avis-etoile" style="font-size:${taille};color:${i<=Math.round(n)?'var(--or)':'var(--creme3)'}">★</span>`
-  ).join('');
-}
-
-function setNote(n){
-  noteSelectionnee = n;
-  document.querySelectorAll('.etoile-btn').forEach((el,i)=>{
-    el.classList.toggle('actif', i < n);
-  });
-}
+function etoilesHTML(n,taille='15px'){return[1,2,3,4,5].map(i=>`<span class="avis-etoile" style="font-size:${taille};color:${i<=Math.round(n)?'#FFD700':'var(--gris2)'}">★</span>`).join('');}
+function setNote(n){noteSelectionnee=n;document.querySelectorAll('.etoile-btn').forEach((el,i)=>el.classList.toggle('actif',i<n));}
 
 async function toggleJournal(){
   if(!user){toast('Connectez-vous pour utiliser le journal.');return;}
-  const btn = document.getElementById('btn-journal');
-  const {data:existing} = await supa.from('journal').select('id').eq('user_id',user.id).eq('piece_id',pieceId).maybeSingle();
-  if(existing){
-    await supa.from('journal').delete().eq('id',existing.id);
-    btn.textContent='+ Marquer comme vu';
-    btn.classList.remove('vu');
-    toast('Retiré du journal.');
+  const btn=document.getElementById('btn-journal');
+  const{data:ex}=await supa.from('journal').select('id').eq('user_id',user.id).eq('piece_id',pieceId).maybeSingle();
+  if(ex){
+    await supa.from('journal').delete().eq('id',ex.id);
+    btn.textContent='+ Marquer comme vu';btn.classList.remove('vu');toast('Retiré du journal.');
   } else {
     await supa.from('journal').insert({user_id:user.id,piece_id:pieceId,date_vue:new Date().toISOString().slice(0,10)});
-    btn.textContent='✓ Vu';
-    btn.classList.add('vu');
-    toast('🎭 Ajouté à votre journal !');
+    btn.textContent='✓ Vu';btn.classList.add('vu');toast('🎭 Ajouté à votre journal !');
   }
 }
 
 async function publierAvis(){
   if(!user){toast('Connectez-vous pour publier un avis.');return;}
-  if(!noteSelectionnee){toast('Choisissez une note en étoiles.');return;}
-  const commentaire = document.getElementById('avis-texte').value.trim();
-  const {data:existing} = await supa.from('avis').select('id').eq('user_id',user.id).eq('piece_id',pieceId).maybeSingle();
-  if(existing){
-    await supa.from('avis').update({note:noteSelectionnee,commentaire}).eq('id',existing.id);
-  } else {
-    await supa.from('avis').insert({user_id:user.id,piece_id:pieceId,note:noteSelectionnee,commentaire});
-  }
-  toast('✓ Avis publié !');
-  charger(); // Recharger la page
+  if(!noteSelectionnee){toast('Choisissez une note.');return;}
+  const commentaire=document.getElementById('avis-texte').value.trim();
+  const{data:ex}=await supa.from('avis').select('id').eq('user_id',user.id).eq('piece_id',pieceId).maybeSingle();
+  if(ex){await supa.from('avis').update({note:noteSelectionnee,commentaire}).eq('id',ex.id);}
+  else{await supa.from('avis').insert({user_id:user.id,piece_id:pieceId,note:noteSelectionnee,commentaire});}
+  toast('✓ Avis publié !');charger();
 }
 
 async function charger(){
-  const params = new URLSearchParams(window.location.search);
-  pieceId = params.get('id');
-  if(!pieceId){document.getElementById('contenu').innerHTML='<div style="padding:60px;text-align:center;font-style:italic;color:var(--muted)">Pièce introuvable.</div>';return;}
+  const params=new URLSearchParams(window.location.search);
+  pieceId=params.get('id');
+  if(!pieceId){document.getElementById('contenu').innerHTML='<div style="padding:60px;text-align:center;color:var(--muted)">Pièce introuvable.</div>';return;}
 
-  // Récupérer la pièce
-  const {data:p} = await supa.from('pieces').select(`
-    id,titre,auteur,metteur_scene,genre,description,affiche_url,duree_min,
-    representations(date_debut,date_fin,prix_min,lien_reservation,
-      theatres(nom,ville,adresse))
-  `).eq('id',pieceId).single();
-
+  const{data:p}=await supa.from('pieces').select(`id,titre,auteur,metteur_scene,genre,description,affiche_url,duree_min,representations(date_debut,date_fin,prix_min,lien_reservation,theatres(nom,ville,adresse))`).eq('id',pieceId).single();
   if(!p){document.getElementById('contenu').innerHTML='<div style="padding:60px;text-align:center">Pièce introuvable.</div>';return;}
 
-  // Mettre à jour le titre de l'onglet
-  document.title = `Entracte — ${p.titre}`;
-
-  // Récupérer les avis
-  const {data:avisData} = await supa.from('avis').select(`note,commentaire,created_at,profils(pseudo)`).eq('piece_id',pieceId).order('created_at',{ascending:false}).limit(30);
-
-  // Vérifier journal et mon avis
-  let dejaVu = false, monAvis = null;
+  document.title=`Entracte — ${p.titre}`;
+  const{data:avisData}=await supa.from('avis').select(`note,commentaire,created_at,profils(pseudo)`).eq('piece_id',pieceId).order('created_at',{ascending:false}).limit(30);
+  let dejaVu=false,monAvis=null;
   if(user){
-    const {data:j} = await supa.from('journal').select('id').eq('user_id',user.id).eq('piece_id',pieceId).maybeSingle();
-    dejaVu = !!j;
-    const {data:a} = await supa.from('avis').select('id,note,commentaire').eq('user_id',user.id).eq('piece_id',pieceId).maybeSingle();
-    monAvis = a;
-    if(monAvis) noteSelectionnee = monAvis.note;
+    const{data:j}=await supa.from('journal').select('id').eq('user_id',user.id).eq('piece_id',pieceId).maybeSingle();
+    dejaVu=!!j;
+    const{data:a}=await supa.from('avis').select('id,note,commentaire').eq('user_id',user.id).eq('piece_id',pieceId).maybeSingle();
+    monAvis=a;if(monAvis)noteSelectionnee=monAvis.note;
   }
 
-  const rep = p.representations?.[0];
-  const th  = rep?.theatres;
-  const moy = avisData?.length ? (avisData.reduce((s,a)=>s+a.note,0)/avisData.length).toFixed(1) : null;
-  const nbAvis = avisData?.length || 0;
+  const rep=p.representations?.[0],th=rep?.theatres;
+  const moy=avisData?.length?(avisData.reduce((s,a)=>s+a.note,0)/avisData.length).toFixed(1):null;
+  const nbAvis=avisData?.length||0;
+  const fmt=d=>d?new Date(d).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}):null;
 
-  const fmt = d => d ? new Date(d).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}) : null;
-
-  document.getElementById('contenu').innerHTML = `
-    <!-- HERO -->
+  document.getElementById('contenu').innerHTML=`
     <div class="hero-piece">
-      <div class="hero-bg">
-        ${p.affiche_url ? `<div class="hero-bg-img" style="background-image:url('${p.affiche_url}')"></div>` : ''}
-        <div class="hero-bg-gradient"></div>
-      </div>
-      <div class="hero-piece-inner">
+      <div class="hero-bg-img" style="${p.affiche_url?`background-image:url('${p.affiche_url}')`:''}" ></div>
+      <div class="hero-bg-grad"></div>
+      <div class="hero-inner">
         <div class="affiche-grande">
-          ${p.affiche_url
-            ? `<img src="${p.affiche_url}" alt="${p.titre}">`
-            : `<div class="affiche-ph"><div class="affiche-ph-ico">🎭</div><div class="affiche-ph-titre">${p.titre}</div></div>`}
+          ${p.affiche_url?`<img src="${p.affiche_url}" alt="${p.titre}">`:`<div class="affiche-ph"><div class="affiche-ph-ico">🎭</div><div class="affiche-ph-titre">${p.titre}</div></div>`}
         </div>
         <div class="hero-infos">
-          ${p.genre ? `<div class="hero-genre">${p.genre}</div>` : ''}
+          ${p.genre?`<div class="hero-genre">${p.genre}</div>`:''}
           <h1 class="hero-titre">${p.titre}</h1>
-          ${p.auteur ? `<div class="hero-auteur">— ${p.auteur}</div>` : ''}
-          ${moy ? `
-          <div class="hero-note">
-            <div class="etoiles">${etoilesHTML(moy,'20px')}</div>
-            <span class="note-chiffre">${moy}/5</span>
-            <span class="note-count">(${nbAvis} avis)</span>
-          </div>` : ''}
+          ${p.auteur?`<div class="hero-auteur">— ${p.auteur}</div>`:''}
+          ${moy?`<div class="hero-note"><div class="etoiles">${etoilesHTML(moy,'20px')}</div><span class="note-chiffre">${moy}/5</span><span class="note-count">(${nbAvis} avis)</span></div>`:''}
           <div class="hero-actions">
-            ${rep?.lien_reservation ? `<a class="btn-reserver" href="${rep.lien_reservation}" target="_blank">Réserver →</a>` : ''}
-            <button class="btn-journal ${dejaVu?'vu':''}" id="btn-journal" onclick="toggleJournal()">
-              ${dejaVu ? '✓ Vu' : '+ Marquer comme vu'}
-            </button>
+            ${rep?.lien_reservation?`<a class="btn-reserver" href="${rep.lien_reservation}" target="_blank">Réserver →</a>`:''}
+            <button class="btn-journal ${dejaVu?'vu':''}" id="btn-journal" onclick="toggleJournal()">${dejaVu?'✓ Vu':'+ Marquer comme vu'}</button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- BANDE INFOS -->
     <div class="piece-body">
       <div class="info-band">
-        ${th ? `<div class="info-bloc"><div class="info-label">Théâtre</div><div class="info-val">${th.nom}</div>${th.ville?`<div class="info-val info-val-sm" style="color:var(--muted)">${th.ville}</div>`:''}</div>` : ''}
-        ${rep?.date_debut ? `<div class="info-bloc"><div class="info-label">Dates</div><div class="info-val info-val-sm">${fmt(rep.date_debut)}${rep.date_fin?' → '+fmt(rep.date_fin):''}</div></div>` : ''}
-        ${rep?.prix_min ? `<div class="info-bloc"><div class="info-label">Tarif</div><div class="info-val">À partir de ${rep.prix_min}€</div></div>` : ''}
-        ${p.duree_min ? `<div class="info-bloc"><div class="info-label">Durée</div><div class="info-val">${p.duree_min} min</div></div>` : ''}
+        ${th?`<div class="info-bloc"><div class="info-label">Théâtre</div><div class="info-val">${th.nom}</div>${th.ville?`<div class="info-val info-val-sm" style="color:var(--muted);font-weight:700">${th.ville}</div>`:''}</div>`:''}
+        ${rep?.date_debut?`<div class="info-bloc"><div class="info-label">Dates</div><div class="info-val info-val-sm">${fmt(rep.date_debut)}${rep.date_fin?' → '+fmt(rep.date_fin):''}</div></div>`:''}
+        ${rep?.prix_min?`<div class="info-bloc"><div class="info-label">Tarif</div><div class="info-val">À partir de ${rep.prix_min}€</div></div>`:''}
+        ${p.duree_min?`<div class="info-bloc"><div class="info-label">Durée</div><div class="info-val">${p.duree_min} min</div></div>`:''}
       </div>
 
-      <!-- DESCRIPTION -->
-      ${p.description ? `
-      <div class="section">
-        <div class="section-titre">À propos</div>
-        <div class="description">${p.description}</div>
-      </div>` : ''}
+      ${p.description?`<div class="section"><div class="section-titre">À propos</div><div class="description">${p.description}</div></div>`:''}
 
-      <!-- MON AVIS -->
       <div class="section">
-        <div class="section-titre">Donner mon avis</div>
+        <div class="section-titre">Mon avis</div>
         <div class="avis-form">
-          <div class="avis-form-titre">Ma note</div>
-          <div class="etoiles-form">
-            ${[1,2,3,4,5].map(i=>`<span class="etoile-btn ${monAvis&&i<=monAvis.note?'actif':''}" onclick="setNote(${i})">★</span>`).join('')}
-          </div>
-          <textarea class="avis-inp" id="avis-texte" placeholder="Partagez votre ressenti sur ce spectacle…" rows="3">${monAvis?.commentaire||''}</textarea>
-          <button class="btn-publier" onclick="publierAvis()">${monAvis?'Modifier mon avis':'Publier mon avis'}</button>
+          <div class="avis-form-label">Ma note</div>
+          <div class="etoiles-form">${[1,2,3,4,5].map(i=>`<span class="etoile-btn ${monAvis&&i<=monAvis.note?'actif':''}" onclick="setNote(${i})">★</span>`).join('')}</div>
+          <textarea class="avis-inp" id="avis-texte" placeholder="Partagez votre ressenti…" rows="3">${monAvis?.commentaire||''}</textarea>
+          <button class="btn-publier" onclick="publierAvis()">${monAvis?'Modifier':'Publier mon avis'}</button>
         </div>
       </div>
 
-      <!-- AVIS PUBLICS -->
       <div class="section">
-        <div class="section-titre">Avis du public ${nbAvis?`<span style="font-size:14px;color:var(--muted);font-weight:400">(${nbAvis})</span>`:''}</div>
-        <div class="avis-liste">
-          ${nbAvis ? avisData.map(a=>`
-            <div class="avis-card">
-              <div class="avis-top">
-                <div class="avis-pseudo">${a.profils?.pseudo||'Anonyme'}</div>
-                <div class="avis-etoiles">${etoilesHTML(a.note)}</div>
-                <div class="avis-date">${new Date(a.created_at).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'})}</div>
-              </div>
-              ${a.commentaire?`<div class="avis-texte">${a.commentaire}</div>`:''}
+        <div class="section-titre">Avis du public ${nbAvis?`<span style="font-size:15px;color:var(--muted);font-weight:700">(${nbAvis})</span>`:''}</div>
+        ${nbAvis?avisData.map(a=>`
+          <div class="avis-card">
+            <div class="avis-top">
+              <div class="avis-pseudo">${a.profils?.pseudo||'Anonyme'}</div>
+              <div class="avis-etoiles">${etoilesHTML(a.note)}</div>
+              <div class="avis-date">${new Date(a.created_at).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'})}</div>
             </div>
-          `).join('') : `<div class="avis-vide">Soyez le premier à donner votre avis !</div>`}
-        </div>
+            ${a.commentaire?`<div class="avis-texte">${a.commentaire}</div>`:''}
+          </div>`).join(''):`<div class="avis-vide">Soyez le premier à donner votre avis !</div>`}
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
-window.addEventListener('DOMContentLoaded', async()=>{
-  const {data:{session}} = await supa.auth.getSession();
-  if(session?.user) user = session.user;
+window.addEventListener('DOMContentLoaded',async()=>{
+  const{data:{session}}=await supa.auth.getSession();
+  if(session?.user)user=session.user;
   charger();
 });
 </script>
