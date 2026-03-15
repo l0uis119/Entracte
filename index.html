@@ -145,6 +145,68 @@ nav{height:62px;display:flex;align-items:center;justify-content:space-between;pa
 .lp:nth-child(3){animation-delay:.3s;}
 @keyframes rebond{0%,80%,100%{transform:scale(.5);opacity:.3;}40%{transform:scale(1.1);opacity:1;}}
 
+/* ── PANEL DÉTAIL ── */
+#detail-panel{position:fixed;inset:0;z-index:500;display:none;align-items:flex-end;}
+#detail-panel.ok{display:flex;}
+.detail-overlay{position:absolute;inset:0;background:rgba(28,20,16,.6);backdrop-filter:blur(3px);}
+.detail-content{position:relative;width:100%;max-width:760px;margin:0 auto;max-height:92vh;background:var(--creme);border-radius:20px 20px 0 0;overflow-y:auto;z-index:1;animation:slideUp .35s cubic-bezier(.2,.8,.2,1);}
+@media(min-width:700px){
+  #detail-panel{align-items:center;}
+  .detail-content{border-radius:20px;max-height:88vh;}
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:translateY(0);}}
+.detail-content::-webkit-scrollbar{width:4px;}
+.detail-content::-webkit-scrollbar-thumb{background:var(--creme3);border-radius:2px;}
+
+.detail-fermer{position:sticky;top:0;float:right;margin:16px 16px 0 0;width:36px;height:36px;border-radius:50%;border:1.5px solid var(--creme3);background:var(--creme);color:var(--brun);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;z-index:10;}
+.detail-fermer:hover{border-color:var(--rouge);color:var(--rouge);}
+
+.detail-hero{display:flex;gap:28px;padding:20px 28px 28px;align-items:flex-start;}
+@media(max-width:600px){.detail-hero{flex-direction:column;}}
+.detail-affiche{width:160px;flex-shrink:0;aspect-ratio:2/3;border-radius:10px;overflow:hidden;border:1px solid var(--creme3);box-shadow:0 4px 20px rgba(28,20,16,.12);}
+@media(max-width:600px){.detail-affiche{width:120px;}}
+.detail-affiche img{width:100%;height:100%;object-fit:cover;}
+.detail-infos{flex:1;min-width:0;}
+.detail-genre{display:inline-block;padding:3px 12px;border-radius:100px;background:rgba(184,49,31,.1);border:1px solid rgba(184,49,31,.2);font-family:'Libre Baskerville',serif;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--rouge);margin-bottom:10px;}
+.detail-titre{font-family:'Playfair Display',serif;font-size:28px;font-weight:900;font-style:italic;color:var(--noir);line-height:1.15;margin-bottom:6px;}
+.detail-auteur{font-family:'Lora',serif;font-size:15px;font-style:italic;color:var(--brun);margin-bottom:4px;}
+.detail-meta{font-size:12px;color:var(--muted);margin-bottom:12px;}
+.detail-note{display:flex;align-items:center;gap:6px;margin-bottom:14px;font-family:'Libre Baskerville',serif;font-size:13px;color:var(--brun);}
+.detail-lieu-box{background:var(--creme2);border-radius:10px;padding:12px 15px;margin-bottom:16px;}
+.detail-lieu-nom{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;font-style:italic;color:var(--noir);margin-bottom:3px;}
+.detail-lieu-adr{font-size:12px;color:var(--muted);margin-bottom:6px;}
+.detail-dates{font-family:'Libre Baskerville',serif;font-size:12px;color:var(--brun);margin-bottom:3px;}
+.detail-prix{font-family:'Libre Baskerville',serif;font-size:13px;font-weight:700;color:var(--rouge);}
+.detail-actions{display:flex;gap:10px;flex-wrap:wrap;}
+.btn-reserver{padding:11px 22px;background:var(--rouge);color:var(--creme);border-radius:8px;font-family:'Libre Baskerville',serif;font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;text-decoration:none;transition:all .2s;}
+.btn-reserver:hover{background:var(--rouge2);transform:translateY(-1px);}
+.btn-journal{padding:11px 18px;border-radius:8px;border:1.5px solid var(--creme3);background:transparent;font-family:'Libre Baskerville',serif;font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--brun);cursor:pointer;transition:all .2s;}
+.btn-journal:hover{border-color:var(--rouge);color:var(--rouge);}
+.btn-journal.vu{background:rgba(184,49,31,.08);border-color:var(--rouge);color:var(--rouge);}
+
+.detail-section{padding:20px 28px;border-top:1px solid var(--creme3);}
+.detail-section-titre{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;font-style:italic;color:var(--noir);margin-bottom:14px;}
+.detail-desc{font-family:'Lora',serif;font-size:14px;line-height:1.75;color:var(--brun);font-style:italic;}
+
+/* Avis */
+.avis-form{display:flex;flex-direction:column;gap:12px;}
+.etoiles-interactives{display:flex;gap:4px;}
+.etoile-btn{transition:transform .15s;display:inline-block;}
+.etoile-btn:hover{transform:scale(1.2);}
+#avis-texte{width:100%;padding:12px 14px;border:1.5px solid var(--creme3);border-radius:8px;background:#FFFDF8;font-family:'Lora',serif;font-size:14px;font-style:italic;color:var(--noir);outline:none;resize:vertical;min-height:80px;transition:border-color .2s;}
+#avis-texte:focus{border-color:var(--rouge);}
+.btn-avis{align-self:flex-start;padding:10px 20px;background:var(--rouge);color:var(--creme);border:none;border-radius:8px;font-family:'Libre Baskerville',serif;font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.btn-avis:hover{background:var(--rouge2);}
+
+.avis-card{padding:14px 0;border-bottom:1px solid var(--creme2);}
+.avis-card:last-child{border-bottom:none;}
+.avis-top{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.avis-pseudo{font-family:'Libre Baskerville',serif;font-size:13px;font-weight:700;color:var(--noir);}
+.avis-note{display:flex;gap:1px;}
+.avis-date{font-size:11px;color:var(--muted);margin-left:auto;}
+.avis-texte{font-family:'Lora',serif;font-size:13px;font-style:italic;color:var(--brun);line-height:1.6;}
+.avis-vide{font-family:'Lora',serif;font-size:14px;font-style:italic;color:var(--muted);text-align:center;padding:20px 0;}
+
 .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--noir);color:var(--creme);padding:11px 22px;border-radius:100px;font-family:'Libre Baskerville',serif;font-size:13px;opacity:0;transition:all .3s;pointer-events:none;z-index:9999;white-space:nowrap;border:1px solid rgba(245,240,232,.15);}
 .toast.ok{opacity:1;transform:translateX(-50%) translateY(0);}
 
@@ -245,6 +307,15 @@ nav{height:62px;display:flex;align-items:center;justify-content:space-between;pa
   </div>
 </div>
 
+
+<!-- PANEL DÉTAIL -->
+<div id="detail-panel">
+  <div class="detail-overlay" onclick="fermerDetail()"></div>
+  <div class="detail-content">
+    <button class="detail-fermer" onclick="fermerDetail()"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    <div id="detail-body"></div>
+  </div>
+</div>
 <div class="nav-bas">
   <div class="nb actif"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Accueil</div>
   <div class="nb"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Recherche</div>
@@ -379,7 +450,174 @@ function card(p,i){
 function distKm(a,b){const R=6371,dL=(b.latitude-a.lat)*Math.PI/180,dG=(b.longitude-a.lng)*Math.PI/180,x=Math.sin(dL/2)**2+Math.cos(a.lat*Math.PI/180)*Math.cos(b.latitude*Math.PI/180)*Math.sin(dG/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
 function setF(el,g){document.querySelectorAll('.puce').forEach(p=>p.classList.remove('actif'));el.classList.add('actif');filtre=g;doFilter();}
 function doFilter(){render(pieces);}
-function openPiece(id){toast('Page détail — bientôt !');}
+// ══════════════════════════════════════════════
+//  PAGE DÉTAIL
+// ══════════════════════════════════════════════
+async function openPiece(id) {
+  const panel = document.getElementById('detail-panel');
+  const body  = document.getElementById('detail-body');
+  panel.classList.add('ok');
+  document.body.style.overflow = 'hidden';
+  body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;padding:80px">
+    <div class="lp"></div><div class="lp" style="animation-delay:.15s;background:var(--or)"></div><div class="lp" style="animation-delay:.3s"></div>
+  </div>`;
+
+  // Charger la pièce
+  const { data: p, error } = await supa.from('pieces').select(`
+    id, titre, auteur, metteur_scene, genre, description, affiche_url, duree_min,
+    representations(date_debut, date_fin, prix_min, lien_reservation,
+      theatres(nom, ville, adresse, latitude, longitude))
+  `).eq('id', id).single();
+
+  if (error || !p) {
+    body.innerHTML = `<div style="padding:40px;color:var(--rouge)">Erreur de chargement.</div>`;
+    return;
+  }
+
+  // Charger les avis
+  const { data: avisData } = await supa.from('avis').select(`
+    note, commentaire, created_at,
+    profils(pseudo)
+  `).eq('piece_id', id).order('created_at', { ascending: false }).limit(20);
+
+  // Vérifier si déjà au journal
+  let dejaVu = false;
+  let monAvis = null;
+  if (user) {
+    const { data: jData } = await supa.from('journal').select('id').eq('user_id', user.id).eq('piece_id', id).maybeSingle();
+    dejaVu = !!jData;
+    const { data: aData } = await supa.from('avis').select('id, note, commentaire').eq('user_id', user.id).eq('piece_id', id).maybeSingle();
+    monAvis = aData;
+  }
+
+  const rep   = p.representations?.[0];
+  const th    = rep?.theatres;
+  const moy   = avisData?.length ? (avisData.reduce((s,a) => s+a.note, 0) / avisData.length).toFixed(1) : null;
+
+  const etoiles = (n, interactive=false, prefix='') => [1,2,3,4,5].map(i =>
+    `<span class="etoile${interactive?' etoile-btn':''}" ${interactive?`onclick="noterPiece('${id}',${i})"`:''}
+     style="color:${i<=Math.round(n)?'var(--or)':'var(--creme3)'}; font-size:${interactive?'28px':'16px'}; cursor:${interactive?'pointer':'default'}">★</span>`
+  ).join('');
+
+  body.innerHTML = `
+    <!-- HERO -->
+    <div class="detail-hero">
+      <div class="detail-affiche">
+        ${p.affiche_url
+          ? `<img src="${p.affiche_url}" alt="${p.titre}">`
+          : `<div class="ph" style="height:100%"><div class="ph-ico">🎭</div><div class="ph-titre">${p.titre}</div></div>`}
+      </div>
+      <div class="detail-infos">
+        ${p.genre ? `<div class="detail-genre">${p.genre}</div>` : ''}
+        <h1 class="detail-titre">${p.titre}</h1>
+        ${p.auteur ? `<div class="detail-auteur">— ${p.auteur}</div>` : ''}
+        ${p.metteur_scene ? `<div class="detail-meta">Mise en scène : ${p.metteur_scene}</div>` : ''}
+
+        ${moy ? `<div class="detail-note">${etoiles(moy)} <span>${moy}/5</span> <span style="color:var(--muted);font-size:12px">(${avisData.length} avis)</span></div>` : ''}
+
+        <div class="detail-lieu-box">
+          ${th ? `
+            <div class="detail-lieu-nom">${th.nom}</div>
+            <div class="detail-lieu-adr">${th.adresse ? th.adresse + ', ' : ''}${th.ville}</div>
+          ` : '<div class="detail-lieu-nom">Lieu non précisé</div>'}
+          ${rep?.date_debut ? `<div class="detail-dates">Du ${new Date(rep.date_debut).toLocaleDateString('fr-FR',{day:'numeric',month:'long'})}${rep.date_fin ? ' au ' + new Date(rep.date_fin).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}) : ''}</div>` : ''}
+          ${rep?.prix_min ? `<div class="detail-prix">À partir de <strong>${rep.prix_min}€</strong></div>` : ''}
+        </div>
+
+        <div class="detail-actions">
+          ${rep?.lien_reservation ? `<a class="btn-reserver" href="${rep.lien_reservation}" target="_blank">Réserver →</a>` : ''}
+          <button class="btn-journal ${dejaVu?'vu':''}" id="btn-journal" onclick="toggleJournal('${id}')">
+            ${dejaVu ? '✓ Vu' : '+ Marquer comme vu'}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DESCRIPTION -->
+    ${p.description ? `
+    <div class="detail-section">
+      <div class="detail-section-titre">À propos</div>
+      <div class="detail-desc">${p.description}</div>
+    </div>` : ''}
+
+    <!-- MON AVIS -->
+    <div class="detail-section" id="section-mon-avis">
+      <div class="detail-section-titre">Mon avis</div>
+      <div class="avis-form">
+        <div class="etoiles-interactives" id="etoiles-form">
+          ${etoiles(monAvis?.note || 0, true, id)}
+        </div>
+        <textarea id="avis-texte" placeholder="Partagez votre ressenti…" rows="3">${monAvis?.commentaire || ''}</textarea>
+        <button class="btn-avis" onclick="publierAvis('${id}')">
+          ${monAvis ? 'Modifier mon avis' : 'Publier mon avis'}
+        </button>
+      </div>
+    </div>
+
+    <!-- AVIS PUBLICS -->
+    <div class="detail-section">
+      <div class="detail-section-titre">Avis du public ${avisData?.length ? `<span style="font-size:13px;color:var(--muted);font-weight:400">(${avisData.length})</span>` : ''}</div>
+      ${avisData?.length ? avisData.map(a => `
+        <div class="avis-card">
+          <div class="avis-top">
+            <div class="avis-pseudo">${a.profils?.pseudo || 'Anonyme'}</div>
+            <div class="avis-note">${etoiles(a.note)}</div>
+            <div class="avis-date">${new Date(a.created_at).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'})}</div>
+          </div>
+          ${a.commentaire ? `<div class="avis-texte">${a.commentaire}</div>` : ''}
+        </div>
+      `).join('') : `<div class="avis-vide">Soyez le premier à donner votre avis !</div>`}
+    </div>
+  `;
+
+  // Note sélectionnée
+  window._noteSelectionnee = monAvis?.note || 0;
+}
+
+function fermerDetail() {
+  document.getElementById('detail-panel').classList.remove('ok');
+  document.body.style.overflow = '';
+}
+
+function noterPiece(pieceId, note) {
+  window._noteSelectionnee = note;
+  document.querySelectorAll('.etoile-btn').forEach((el, i) => {
+    el.style.color = i < note ? 'var(--or)' : 'var(--creme3)';
+  });
+}
+
+async function toggleJournal(pieceId) {
+  if (!user) return toast('Connectez-vous pour utiliser le journal.');
+  const btn = document.getElementById('btn-journal');
+  const { data: existing } = await supa.from('journal').select('id').eq('user_id', user.id).eq('piece_id', pieceId).maybeSingle();
+  if (existing) {
+    await supa.from('journal').delete().eq('id', existing.id);
+    btn.textContent = '+ Marquer comme vu';
+    btn.classList.remove('vu');
+    toast('Retiré du journal.');
+  } else {
+    await supa.from('journal').insert({ user_id: user.id, piece_id: pieceId, date_vue: new Date().toISOString().slice(0,10) });
+    btn.textContent = '✓ Vu';
+    btn.classList.add('vu');
+    toast('🎭 Ajouté à votre journal !');
+  }
+}
+
+async function publierAvis(pieceId) {
+  if (!user) return toast('Connectez-vous pour publier un avis.');
+  const note = window._noteSelectionnee || 0;
+  const commentaire = document.getElementById('avis-texte').value.trim();
+  if (!note) return toast('Choisissez une note en étoiles.');
+
+  const { data: existing } = await supa.from('avis').select('id').eq('user_id', user.id).eq('piece_id', pieceId).maybeSingle();
+  if (existing) {
+    await supa.from('avis').update({ note, commentaire }).eq('id', existing.id);
+  } else {
+    await supa.from('avis').insert({ user_id: user.id, piece_id: pieceId, note, commentaire });
+  }
+  toast('✓ Avis publié !');
+  openPiece(pieceId); // Recharger
+}
 
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('ok');setTimeout(()=>t.classList.remove('ok'),2600);}
 
