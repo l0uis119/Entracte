@@ -127,7 +127,7 @@ async function retirer(jid,e){
 async function charger(){
   const{data:{session}}=await supa.auth.getSession();
   if(!session?.user){
-    document.getElementById('contenu').innerHTML=`<div class="non-co"><div class="non-co-ico">📖</div><div class="non-co-titre">Votre journal vous attend</div><p class="non-co-desc">Connectez-vous pour retrouver vos spectacles.</p><a href="index.html" class="btn-co">Se connecter</a></div>`;
+    document.getElementById('contenu').innerHTML=`<div class="non-co"><div class="non-co-titre">Votre journal vous attend</div><p class="non-co-desc">Connectez-vous pour retrouver vos spectacles.</p><a href="index.html" class="btn-co">Se connecter</a></div>`;
     return;
   }
   const u=session.user;
@@ -166,7 +166,7 @@ async function charger(){
     </div>
 
     <div class="journal-body">
-      ${nb===0?`<div class="vide"><div class="vide-ico">🎭</div><div class="vide-titre">Journal vide</div><p class="vide-desc">Marquez les spectacles que vous avez vus pour les retrouver ici.</p><a href="index.html" class="btn-exp">Explorer</a></div>`
+      ${nb===0?`<div class="vide"><div class="vide-titre">Journal vide</div><p class="vide-desc">Marquez les spectacles que vous avez vus pour les retrouver ici.</p><a href="index.html" class="btn-exp">Explorer</a></div>`
       :Object.entries(groupes).sort((a,b)=>b[0]-a[0]).map(([annee,items])=>`
         <div class="groupe-titre">${annee} — ${items.length} spectacle${items.length>1?'s':''}</div>
         <div class="liste">
