@@ -626,7 +626,7 @@ async function loadPieces(){
   const g=document.getElementById('grille');
   g.innerHTML='<div class="loader"><div class="lp"></div><div class="lp"></div><div class="lp"></div></div>';
   const{data,error}=await supa.from('pieces').select(`id,titre,auteur,genre,affiche_url,representations(theatre_id,date_debut,prix_min,theatres(nom,ville,latitude,longitude))`).order('created_at',{ascending:false}).limit(60);
-  if(error){g.innerHTML=`<div class="vide"><div class="vide-ico">⚠️</div><div class="vide-titre">Erreur</div><div class="vide-desc">${error.message}</div></div>`;return;}
+  if(error){g.innerHTML=`<div class="vide"><div class="vide-titre">Erreur</div><div class="vide-desc">${error.message}</div></div>`;return;}
   pieces=data||[];render(pieces);
 }
 
@@ -634,7 +634,7 @@ function render(list){
   const g=document.getElementById('grille');
   const q=document.getElementById('s-inp').value.toLowerCase();
   const f=list.filter(p=>(!filtre||p.genre===filtre)&&(!q||p.titre?.toLowerCase().includes(q)||p.auteur?.toLowerCase().includes(q)));
-  if(!f.length){g.innerHTML='<div class="vide"><div class="vide-ico">🎭</div><div class="vide-titre">Aucun spectacle</div><div class="vide-desc">Essayez un autre filtre.</div></div>';return;}
+  if(!f.length){g.innerHTML='<div class="vide"><div class="vide-titre">Aucun spectacle</div><div class="vide-desc">Essayez un autre filtre.</div></div>';return;}
   g.innerHTML=f.map((p,i)=>card(p,i)).join('');
 }
 
