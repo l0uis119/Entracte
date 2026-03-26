@@ -175,6 +175,9 @@ body{
 /* Fix bug mobile */
 #page-main{display:none;}
 #page-main.ok{display:block;}
+/* Évite le flash de la page auth pendant la vérification de session */
+#page-auth{display:none;}
+#page-auth.visible{display:flex;}
 
 /* ── NAV ── */
 nav{
@@ -571,7 +574,7 @@ async function doSignup(){
 async function doLogout(){
   await supa.auth.signOut();user=null;pieces=[];
   document.getElementById('page-main').classList.remove('ok');
-  document.getElementById('page-auth').style.display='flex';
+  document.getElementById('page-auth').classList.add('visible');
 }
 
 async function onSignIn(u){
@@ -583,7 +586,7 @@ async function onSignIn(u){
     document.getElementById('pseudo-inp').value=def;
     document.getElementById('modal-pseudo').classList.add('ok');
   }
-  document.getElementById('page-auth').style.display='none';
+  document.getElementById('page-auth').classList.remove('visible');
   document.getElementById('page-main').classList.add('ok');
   document.getElementById('nav-av').textContent=pseudo[0].toUpperCase();
   const h=new Date().getHours();
@@ -669,7 +672,12 @@ window.addEventListener('DOMContentLoaded',async()=>{
   document.getElementById('in-pw').addEventListener('keydown',e=>{if(e.key==='Enter')doSignup();});
   document.getElementById('pseudo-inp').addEventListener('keydown',e=>{if(e.key==='Enter')savePseudo();});
   const{data:{session}}=await supa.auth.getSession();
-  if(session?.user)await onSignIn(session.user);
+  if(session?.user){
+    await onSignIn(session.user);
+  } else {
+    // Aucune session : on affiche la page auth seulement maintenant
+    document.getElementById('page-auth').classList.add('visible');
+  }
   supa.auth.onAuthStateChange(async(ev,s)=>{
     if(ev==='SIGNED_IN'&&s?.user&&!user)await onSignIn(s.user);
     if(ev==='SIGNED_OUT')user=null;
