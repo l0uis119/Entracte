@@ -145,7 +145,7 @@ textarea.avis-inp.valide{border-color:#38A169;}
 .avis-vide{font-size:15px;font-weight:700;color:var(--muted);text-align:center;padding:40px 0;}
 
 /* LIKES */
-.avis-pied{display:flex;align-items:center;justify-content:flex-end;margin-top:10px;}
+.avis-pied{display:flex;align-items:center;justify-content:space-between;margin-top:10px;}
 .btn-like{
   display:flex;align-items:center;gap:5px;
   border:none;background:none;cursor:pointer;
@@ -160,6 +160,14 @@ textarea.avis-inp.valide{border-color:#38A169;}
 .btn-like svg{width:14px;height:14px;transition:transform .15s;}
 .btn-like:hover svg{transform:scale(1.2);}
 .btn-like.liked svg{fill:#E53E3E;}
+.btn-supprimer-avis{
+  border:none;background:none;cursor:pointer;
+  font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;
+  letter-spacing:.5px;text-transform:uppercase;
+  color:var(--muted);padding:5px 10px;border-radius:100px;
+  transition:all .2s;
+}
+.btn-supprimer-avis:hover{background:#FFF5F5;color:#E53E3E;}
 
 .toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--noir);color:var(--blanc);padding:12px 24px;border-radius:100px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;opacity:0;transition:all .3s;pointer-events:none;z-index:9999;white-space:nowrap;}
 .toast.ok{opacity:1;transform:translateX(-50%) translateY(0);}
@@ -264,6 +272,14 @@ async function publierAvis(){
   charger();
 }
 
+async function supprimerAvis(){
+  if(!user)return;
+  if(!confirm('Supprimer votre avis définitivement ?'))return;
+  await supa.from('avis').delete().eq('user_id',user.id).eq('piece_id',pieceId);
+  toast('Avis supprimé.');
+  charger();
+}
+
 async function toggleLike(avisId,btn){
   if(!user){toast('Connectez-vous pour liker un avis.');return;}
   const estLike=btn.classList.contains('liked');
@@ -291,7 +307,7 @@ async function charger(){
   document.title=`Entracte — ${echapper(p.titre)}`;
 
   const[{data:avisData},{data:likesData}]=await Promise.all([
-    supa.from('avis').select(`id,note,commentaire,created_at,profils(pseudo)`).eq('piece_id',pieceId).order('created_at',{ascending:false}).limit(30),
+    supa.from('avis').select(`id,user_id,note,commentaire,created_at,profils(pseudo)`).eq('piece_id',pieceId).order('created_at',{ascending:false}).limit(30),
     supa.from('likes_avis').select('avis_id,user_id')
   ]);
 
@@ -375,6 +391,7 @@ async function charger(){
           ${monAvis&&monAvis.commentaire.length<MIN_CHARS?`<div style="font-size:12px;font-weight:700;color:#E53E3E;margin-bottom:14px;">Votre avis précédent était trop court. Complétez-le pour le republier.</div>`:''}
 
           <button class="btn-publier" id="btn-publier" onclick="publierAvis()" disabled>Publier mon avis</button>
+          ${monAvis?`<button class="btn-supprimer-avis" onclick="supprimerAvis()" style="margin-top:10px;display:block;">Supprimer mon avis</button>`:''}
         </div>
       </div>
 
@@ -384,7 +401,7 @@ async function charger(){
           const pseudoSafe=echapper(a.profils?.pseudo||'Anonyme');
           const commentaireSafe=echapper(a.commentaire);
           const like=likesIndex[a.id]||{total:0,monLike:false};
-          const estMoi=user&&a.profils?.pseudo===(monAvis?echapper(user.email.split('@')[0]):'');
+          const estMoi=user&&a.user_id===user.id;
           return`<div class="avis-card">
             <div class="avis-top">
               <div class="avis-pseudo">${pseudoSafe}</div>
