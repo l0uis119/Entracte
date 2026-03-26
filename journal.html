@@ -168,7 +168,7 @@ async function charger(){
     <div class="journal-body">
       ${nb===0?`<div class="vide"><div class="vide-titre">Journal vide</div><p class="vide-desc">Marquez les spectacles que vous avez vus pour les retrouver ici.</p><a href="index.html" class="btn-exp">Explorer</a></div>`
       :Object.entries(groupes).sort((a,b)=>b[0]-a[0]).map(([annee,items])=>`
-        <div class="groupe-titre">${annee} — ${items.length} spectacle${items.length>1?'s':''}</div>
+        <div class="groupe-titre">${annee} · ${items.length} spectacle${items.length>1?'s':''}</div>
         <div class="liste">
           ${items.map(j=>{
             const p=j.pieces,th=p?.representations?.[0]?.theatres,note=avisMap[p?.id];
@@ -176,7 +176,7 @@ async function charger(){
             return`<a href="piece.html?id=${p?.id}" class="jcarte">
               <div class="jc-aff">${p?.affiche_url?`<img src="${p.affiche_url}" alt="${p.titre}" loading="lazy">`:'<div class="jc-ph">🎭</div>'}</div>
               <div class="jc-infos">
-                <div class="jc-titre">${p?.titre||'—'}</div>
+                <div class="jc-titre">${p?.titre||''}</div>
                 ${p?.auteur?`<div class="jc-auteur">${p.auteur}</div>`:''}
                 <div class="jc-meta">
                   ${th?`<div class="jc-th"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${th.nom}</div>`:''}
