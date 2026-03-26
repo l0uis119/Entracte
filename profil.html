@@ -190,7 +190,7 @@ async function charger(){
       <div class="profil-pseudo">${pseudo}</div>
       <div class="profil-email">${u.email}</div>
       <div class="profil-actions">
-        <a href="journal.html" class="btn-blanc">📖 Mon journal</a>
+        <a href="journal.html" class="btn-blanc">Mon journal</a>
         <button class="btn-contour" onclick="seDeconnecter()">Se déconnecter</button>
       </div>
     </div>
@@ -240,7 +240,7 @@ async function charger(){
                 ${a.pieces?.affiche_url?`<img src="${a.pieces.affiche_url}" alt="${a.pieces?.titre}" loading="lazy">`:'<div class="avis-ph">🎭</div>'}
               </div>
               <div class="avis-infos">
-                <div class="avis-titre">${a.pieces?.titre||'—'}</div>
+                <div class="avis-titre">${a.pieces?.titre||''}</div>
                 <div class="avis-etoiles">${etoilesHTML(a.note)}</div>
                 ${a.commentaire?`<div class="avis-commentaire">"${a.commentaire}"</div>`:''}
                 <div class="avis-date">${new Date(a.created_at).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})}</div>
