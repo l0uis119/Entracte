@@ -6,7 +6,282 @@
 <title>Entracte — Mon Profil</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Entracte — Mon Profil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+:root{--blanc:#FFFFFF;--noir:#111111;--gris:#F7F7F7;--gris2:#EEEEEE;--gris3:#CCCCCC;--texte2:#666666;--muted:#AAAAAA;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--blanc);color:var(--noir);font-family:'Nunito',sans-serif;font-weight:700;min-height:100vh;}
+
+nav{height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 36px;background:var(--blanc);border-bottom:2px solid var(--gris2);position:sticky;top:0;z-index:100;}
+.nav-logo{font-size:22px;font-weight:900;color:var(--noir);letter-spacing:4px;text-transform:uppercase;text-decoration:none;}
+.nav-lien{font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);transition:color .2s;text-decoration:none;}
+.nav-lien:hover{color:var(--noir);}
+
+.loader-page{display:flex;align-items:center;justify-content:center;min-height:60vh;}
+.lp{width:10px;height:10px;border-radius:50%;background:var(--gris2);margin:0 4px;animation:rebond 1s infinite ease-in-out;}
+.lp:nth-child(2){animation-delay:.15s;}
+.lp:nth-child(3){animation-delay:.3s;}
+@keyframes rebond{0%,80%,100%{transform:scale(.4);opacity:.4;}40%{transform:scale(1);opacity:1;}}
+
+/* NON CONNECTE */
+.non-co{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center;padding:40px;}
+.non-co-ico{font-size:52px;margin-bottom:20px;opacity:.2;}
+.non-co-titre{font-size:32px;font-weight:900;color:var(--noir);margin-bottom:10px;letter-spacing:-1px;}
+.non-co-desc{font-size:15px;font-weight:700;color:var(--muted);margin-bottom:28px;}
+.btn{padding:13px 26px;border-radius:100px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:900;letter-spacing:1px;text-transform:uppercase;text-decoration:none;transition:all .2s;cursor:pointer;border:none;}
+.btn-noir{background:var(--noir);color:var(--blanc);}
+.btn-noir:hover{opacity:.8;}
+.btn-outline{background:transparent;color:var(--noir);border:2px solid var(--gris2);}
+.btn-outline:hover{border-color:var(--noir);}
+
+/* HERO PROFIL */
+.profil-hero{background:var(--noir);padding:56px 40px;text-align:center;}
+@media(max-width:640px){.profil-hero{padding:40px 20px;}}
+.avatar-grand{width:88px;height:88px;border-radius:50%;background:var(--blanc);color:var(--noir);font-size:36px;font-weight:900;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;letter-spacing:0;}
+.profil-pseudo{font-size:40px;font-weight:900;color:var(--blanc);letter-spacing:-1px;margin-bottom:6px;}
+.profil-email{font-size:14px;font-weight:600;color:rgba(255,255,255,.35);letter-spacing:.5px;margin-bottom:28px;}
+.profil-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.btn-blanc{background:var(--blanc);color:var(--noir);padding:11px 22px;border-radius:100px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:900;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:none;transition:opacity .2s;}
+.btn-blanc:hover{opacity:.85;}
+.btn-contour{background:transparent;color:rgba(255,255,255,.7);padding:11px 22px;border-radius:100px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:900;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:2px solid rgba(255,255,255,.2);transition:all .2s;}
+.btn-contour:hover{border-color:rgba(255,255,255,.6);color:var(--blanc);}
+
+/* BODY */
+.profil-body{max-width:900px;margin:0 auto;padding:0 36px 80px;}
+@media(max-width:640px){.profil-body{padding:0 20px 80px;}}
+
+/* STATS */
+.stats{display:flex;gap:0;border:2px solid var(--gris2);border-radius:20px;margin:40px 0;overflow:hidden;}
+@media(max-width:640px){.stats{flex-wrap:wrap;}}
+.stat{flex:1;padding:28px 16px;text-align:center;border-right:1px solid var(--gris2);}
+.stat:last-child{border-right:none;}
+@media(max-width:640px){.stat{flex:1 1 50%;border-bottom:1px solid var(--gris2);}}
+.stat-n{font-size:44px;font-weight:900;color:var(--noir);line-height:1;letter-spacing:-2px;}
+.stat-lbl{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:6px;}
+
+/* SECTIONS */
+.section{margin-bottom:48px;}
+.section-titre{font-size:20px;font-weight:900;color:var(--noir);margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid var(--gris2);letter-spacing:-.5px;display:flex;align-items:center;justify-content:space-between;}
+
+/* GENRES */
+.genres-grid{display:flex;gap:10px;flex-wrap:wrap;}
+.genre-pill{padding:10px 20px;border-radius:100px;background:var(--gris);border:2px solid var(--gris2);font-size:14px;font-weight:800;color:var(--noir);letter-spacing:.3px;display:flex;align-items:center;gap:8px;}
+.genre-pill-count{font-size:12px;font-weight:900;color:var(--muted);}
+.genre-pill.top{background:var(--noir);border-color:var(--noir);color:var(--blanc);}
+.genre-pill.top .genre-pill-count{color:rgba(255,255,255,.5);}
+
+/* EDIT PSEUDO */
+.edit-form{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.edit-input{flex:1;min-width:200px;padding:12px 16px;border:2px solid var(--gris2);border-radius:12px;background:var(--gris);font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;color:var(--noir);outline:none;transition:border-color .2s;}
+.edit-input:focus{border-color:var(--noir);background:var(--blanc);}
+
+/* MES AVIS */
+.avis-liste{display:flex;flex-direction:column;gap:0;}
+.avis-item{display:flex;gap:16px;padding:18px 0;border-bottom:1px solid var(--gris2);text-decoration:none;color:inherit;transition:opacity .2s;}
+.avis-item:last-child{border-bottom:none;}
+.avis-item:hover{opacity:.7;}
+.avis-aff{width:52px;flex-shrink:0;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:var(--gris);}
+.avis-aff img{width:100%;height:100%;object-fit:cover;}
+.avis-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:16px;opacity:.2;}
+.avis-infos{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;}
+.avis-titre{font-size:16px;font-weight:900;color:var(--noir);margin-bottom:4px;letter-spacing:-.3px;}
+.avis-etoiles{display:flex;gap:2px;margin-bottom:4px;}
+.avis-etoile{font-size:15px;}
+.avis-commentaire{font-size:13px;font-weight:600;color:var(--texte2);line-height:1.5;}
+.avis-vide{font-size:15px;font-weight:700;color:var(--muted);text-align:center;padding:40px 0;}
+.avis-date{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.5px;}
+
+/* DANGER ZONE */
+.danger-zone{border:2px solid var(--gris2);border-radius:16px;padding:24px;}
+.danger-titre{font-size:14px;font-weight:900;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;}
+.btn-danger{padding:11px 20px;border-radius:100px;border:2px solid #E53E3E;background:transparent;font-family:'Nunito',sans-serif;font-size:12px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:#E53E3E;cursor:pointer;transition:all .2s;}
+.btn-danger:hover{background:#E53E3E;color:var(--blanc);}
+
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--noir);color:var(--blanc);padding:12px 24px;border-radius:100px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;opacity:0;transition:all .3s;pointer-events:none;z-index:9999;white-space:nowrap;}
+.toast.ok{opacity:1;transform:translateX(-50%) translateY(0);}
+
+.nav-bas{display:none;position:fixed;bottom:0;left:0;right:0;height:60px;background:var(--blanc);border-top:2px solid var(--gris2);z-index:100;}
+@media(max-width:640px){.nav-bas{display:flex;}body{padding-bottom:60px;}}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--gris3);cursor:pointer;transition:color .2s;text-decoration:none;}
+.nb.actif{color:var(--noir);}
+.nb svg{width:20px;height:20px;}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Entracte</a>
+  <a href="index.html" class="nav-lien">← Accueil</a>
+</nav>
+
+<div id="contenu">
+  <div class="loader-page"><div class="lp"></div><div class="lp"></div><div class="lp"></div></div>
+</div>
+
+<div class="nav-bas">
+  <a href="index.html" class="nb"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Accueil</a>
+  <a href="journal.html" class="nb"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Journal</a>
+  <a href="profil.html" class="nb actif"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profil</a>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL='https://dgnmqlwjfedhndftqdlp.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnbm1xbHdqZmVkaG5kZnRxZGxwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTUwNDcsImV4cCI6MjA4OTA5MTA0N30.w_D2a89bmgJu6hBtIG7Y62sAULyuEsx7gBcmGfLGzKE';
+const supa=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('ok');setTimeout(()=>t.classList.remove('ok'),2600);}
+function etoilesHTML(n){return[1,2,3,4,5].map(i=>`<span class="avis-etoile" style="color:${i<=Math.round(n)?'#FFD700':'var(--gris2)'}">★</span>`).join('');}
+
+async function sauvegarderPseudo(){
+  const val=document.getElementById('edit-pseudo').value.trim();
+  if(val.length<2)return toast('Pseudo trop court.');
+  const{data:{session}}=await supa.auth.getSession();
+  if(!session)return;
+  const{error}=await supa.from('profils').update({pseudo:val}).eq('id',session.user.id);
+  if(error){
+    if(error.code==='23505')return toast('Ce pseudo est déjà pris.');
+    return toast('Une erreur est survenue, réessayez.');
+  }
+  toast('Pseudo mis à jour.');
+  setTimeout(()=>location.reload(),1000);
+}
+
+async function seDeconnecter(){
+  await supa.auth.signOut();
+  window.location.href='index.html';
+}
+
+async function charger(){
+  const{data:{session}}=await supa.auth.getSession();
+  if(!session?.user){
+    document.getElementById('contenu').innerHTML=`<div class="non-co"><div class="non-co-ico">👤</div><div class="non-co-titre">Non connecté</div><p class="non-co-desc">Connectez-vous pour accéder à votre profil.</p><a href="index.html" class="btn btn-noir">Se connecter</a></div>`;
+    return;
+  }
+  const u=session.user;
+
+  // Charger toutes les données
+  const[{data:profil},{data:journal},{data:avis}]=await Promise.all([
+    supa.from('profils').select('pseudo,bio,created_at').eq('id',u.id).single(),
+    supa.from('journal').select(`id,date_vue,pieces(id,titre,genre,affiche_url)`).eq('user_id',u.id).order('created_at',{ascending:false}),
+    supa.from('avis').select(`id,note,commentaire,created_at,pieces(id,titre,affiche_url)`).eq('user_id',u.id).order('created_at',{ascending:false})
+  ]);
+
+  const pseudo=profil?.pseudo||u.email.split('@')[0];
+  const nbVus=journal?.length||0;
+  const nbAvis=avis?.length||0;
+  const noteMoy=nbAvis?(avis.reduce((s,a)=>s+a.note,0)/nbAvis).toFixed(1):'—';
+
+  // Genres préférés
+  const genreCount={};
+  (journal||[]).forEach(j=>{
+    const g=j.pieces?.genre;
+    if(g)genreCount[g]=(genreCount[g]||0)+1;
+  });
+  const genresTries=Object.entries(genreCount).sort((a,b)=>b[1]-a[1]);
+
+  // Membre depuis
+  const membreSince=profil?.created_at?new Date(profil.created_at).toLocaleDateString('fr-FR',{month:'long',year:'numeric'}):'—';
+
+  document.title=`Entracte — ${pseudo}`;
+
+  document.getElementById('contenu').innerHTML=`
+    <!-- HERO -->
+    <div class="profil-hero">
+      <div class="avatar-grand">${pseudo[0].toUpperCase()}</div>
+      <div class="profil-pseudo">${pseudo}</div>
+      <div class="profil-email">${u.email}</div>
+      <div class="profil-actions">
+        <a href="journal.html" class="btn-blanc">Mon journal</a>
+        <button class="btn-contour" onclick="seDeconnecter()">Se déconnecter</button>
+      </div>
+    </div>
+
+    <div class="profil-body">
+
+      <!-- STATS -->
+      <div class="stats">
+        <div class="stat"><div class="stat-n">${nbVus}</div><div class="stat-lbl">Spectacles vus</div></div>
+        <div class="stat"><div class="stat-n">${nbAvis}</div><div class="stat-lbl">Avis publiés</div></div>
+        <div class="stat"><div class="stat-n">${noteMoy}</div><div class="stat-lbl">Note moyenne</div></div>
+        <div class="stat"><div class="stat-n">${genresTries.length}</div><div class="stat-lbl">Genres explorés</div></div>
+      </div>
+
+      <!-- MODIFIER PSEUDO -->
+      <div class="section">
+        <div class="section-titre">Mon pseudo</div>
+        <div class="edit-form">
+          <input class="edit-input" id="edit-pseudo" type="text" value="${pseudo}" maxlength="30" placeholder="Votre pseudo">
+          <button class="btn btn-noir" onclick="sauvegarderPseudo()">Enregistrer</button>
+        </div>
+      </div>
+
+      <!-- GENRES PREFERES -->
+      ${genresTries.length?`
+      <div class="section">
+        <div class="section-titre">Mes genres préférés</div>
+        <div class="genres-grid">
+          ${genresTries.map(([g,n],i)=>`
+            <div class="genre-pill ${i===0?'top':''}">
+              ${g} <span class="genre-pill-count">${n}</span>
+            </div>`).join('')}
+        </div>
+      </div>`:''}
+
+      <!-- MES AVIS -->
+      <div class="section">
+        <div class="section-titre">
+          Mes avis
+          ${nbAvis?`<span style="font-size:15px;color:var(--muted);font-weight:700">${nbAvis}</span>`:''}
+        </div>
+        ${nbAvis?`
+        <div class="avis-liste">
+          ${avis.slice(0,10).map(a=>`
+            <a href="piece.html?id=${a.pieces?.id}" class="avis-item">
+              <div class="avis-aff">
+                ${a.pieces?.affiche_url?`<img src="${a.pieces.affiche_url}" alt="${a.pieces?.titre}" loading="lazy">`:'<div class="avis-ph">🎭</div>'}
+              </div>
+              <div class="avis-infos">
+                <div class="avis-titre">${a.pieces?.titre||''}</div>
+                <div class="avis-etoiles">${etoilesHTML(a.note)}</div>
+                ${a.commentaire?`<div class="avis-commentaire">"${a.commentaire}"</div>`:''}
+                <div class="avis-date">${new Date(a.created_at).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})}</div>
+              </div>
+            </a>`).join('')}
+        </div>`:`<div class="avis-vide">Vous n'avez pas encore publié d'avis.</div>`}
+      </div>
+
+      <!-- INFOS COMPTE -->
+      <div class="section">
+        <div class="section-titre">Mon compte</div>
+        <div style="font-size:14px;font-weight:700;color:var(--muted);margin-bottom:24px;">
+          Membre depuis ${membreSince}
+        </div>
+        <div class="danger-zone">
+          <div class="danger-titre">Zone de danger</div>
+          <button class="btn-danger" onclick="if(confirm('Êtes-vous sûr de vouloir vous déconnecter ?'))seDeconnecter()">
+            Se déconnecter
+          </button>
+        </div>
+      </div>
+
+    </div>`;
+}
+
+document.addEventListener('DOMContentLoaded',charger);
+</script>
+</body>
+</html>
+supabase.js"></script>
 <style>
 :root{--blanc:#FFFFFF;--noir:#111111;--gris:#F7F7F7;--gris2:#EEEEEE;--gris3:#CCCCCC;--texte2:#666666;--muted:#AAAAAA;}
 *{margin:0;padding:0;box-sizing:border-box;}
