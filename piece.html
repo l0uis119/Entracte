@@ -241,9 +241,14 @@ async function publierAvis(){
   // Double vérification côté JS (la première est le bouton désactivé)
   if(commentaire.length<MIN_CHARS){toast(`Encore ${MIN_CHARS-commentaire.length} caractères pour un avis solide !`);return;}
   const{data:ex}=await supa.from('avis').select('id').eq('user_id',user.id).eq('piece_id',pieceId).maybeSingle();
-  if(ex){await supa.from('avis').update({note:noteSelectionnee,commentaire}).eq('id',ex.id);}
-  else{await supa.from('avis').insert({user_id:user.id,piece_id:pieceId,note:noteSelectionnee,commentaire});}
-  toast('✓ Avis publié !');charger();
+  if(ex){
+    await supa.from('avis').update({note:noteSelectionnee,commentaire}).eq('id',ex.id);
+    toast('✓ Avis modifié !');
+  } else {
+    await supa.from('avis').insert({user_id:user.id,piece_id:pieceId,note:noteSelectionnee,commentaire});
+    toast('✓ Avis publié !');
+  }
+  charger();
 }
 
 async function charger(){
@@ -320,7 +325,7 @@ async function charger(){
           <div class="etoiles-form">${[1,2,3,4,5].map(i=>`<span class="etoile-btn ${monAvis&&i<=monAvis.note?'actif':''}" onclick="setNote(${i})">★</span>`).join('')}</div>
 
           <div class="textarea-wrap">
-            <textarea class="avis-inp" id="avis-texte" placeholder="Partagez votre ressenti… Décrivez l'ambiance, le jeu des acteurs, la mise en scène, ce qui vous a touché ou surpris." rows="4" oninput="mettreAJourCompteur()" maxlength="2000">${monAvis?.commentaire?echapper(monAvis.commentaire):''}</textarea>
+            <textarea class="avis-inp" id="avis-texte" placeholder="Partagez votre ressenti… Décrivez l'ambiance, le jeu des acteurs, la mise en scène, ce qui vous a touché ou surpris." rows="4" oninput="mettreAJourCompteur()" maxlength="2000">${monAvis?.commentaire||''}</textarea>
             <span class="compteur loin" id="compteur">0/${MIN_CHARS}</span>
           </div>
 
@@ -352,10 +357,10 @@ async function charger(){
       </div>
     </div>`;
 
-  // Si l'utilisateur a déjà un avis, on remet le compteur à jour après le rendu
-  if(monAvis?.commentaire){
-    mettreAJourCompteur();
-  }
+  // Toujours appeler le compteur après le rendu :
+  // - si avis existant : active le bouton si le texte fait déjà 150+ car.
+  // - si pas d'avis : initialise la barre à 0% et garde le bouton désactivé
+  mettreAJourCompteur();
 }
 
 window.addEventListener('DOMContentLoaded',async()=>{
