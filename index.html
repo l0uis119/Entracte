@@ -566,7 +566,7 @@ async function doSignup(){
   const{error}=await supa.auth.signUp({email,password:pw});
   btn.disabled=false;btn.textContent='Créer mon compte';
   if(error)return err('Erreur : '+error.message);
-  toast('📧 Vérifiez vos e-mails !');
+  toast('Vérifiez vos e-mails.');
 }
 async function doLogout(){
   await supa.auth.signOut();user=null;pieces=[];
@@ -602,7 +602,7 @@ async function savePseudo(){
   document.getElementById('modal-pseudo').classList.remove('ok');
   document.getElementById('nav-av').textContent=pseudo[0].toUpperCase();
   document.getElementById('hero-eye').textContent=`Bienvenue, ${pseudo} !`;
-  toast('🎭 Pseudo enregistré !');
+  toast('Pseudo enregistré.');
 }
 
 function geoLoad(){
@@ -618,7 +618,7 @@ function askGeo(){
     coords={lat:pos.coords.latitude,lng:pos.coords.longitude};
     document.getElementById('geo-lbl').textContent='Près de vous';
     document.getElementById('b-geo').classList.remove('ok');
-    toast('📍 Localisation activée !');render(pieces);
+    toast('Localisation activée.');render(pieces);
   });
 }
 
@@ -648,7 +648,7 @@ function card(p,i){
       <div class="carte-titre">${p.titre}</div>
       ${p.auteur?`<div class="carte-auteur">${p.auteur}</div>`:''}
       <div class="carte-pied">
-        <div class="carte-lieu"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${th?th.nom:'—'}</div>
+        <div class="carte-lieu"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${th?th.nom:''}</div>
         ${rep?.prix_min?`<div class="carte-prix">dès ${rep.prix_min}€</div>`:''}
       </div>
     </div>
