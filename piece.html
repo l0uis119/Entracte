@@ -82,10 +82,55 @@ nav{height:68px;display:flex;align-items:center;justify-content:space-between;pa
 .etoile-btn{font-size:32px;cursor:pointer;transition:transform .15s;color:var(--gris2);line-height:1;}
 .etoile-btn:hover{transform:scale(1.2);}
 .etoile-btn.actif{color:#FFD700;}
-textarea.avis-inp{width:100%;padding:14px 16px;border:2px solid var(--gris2);border-radius:12px;background:var(--blanc);font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;color:var(--noir);outline:none;resize:vertical;min-height:90px;transition:border-color .2s;margin-bottom:14px;}
+
+/* Textarea + compteur */
+.textarea-wrap{position:relative;margin-bottom:14px;}
+textarea.avis-inp{
+  width:100%;padding:14px 16px 40px;
+  border:2px solid var(--gris2);border-radius:12px;
+  background:var(--blanc);
+  font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;color:var(--noir);
+  outline:none;resize:vertical;min-height:110px;
+  transition:border-color .2s;
+}
 textarea.avis-inp:focus{border-color:var(--noir);}
-.btn-publier{padding:12px 24px;background:var(--noir);color:var(--blanc);border:none;border-radius:100px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:900;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+textarea.avis-inp.invalide{border-color:#E53E3E;}
+textarea.avis-inp.valide{border-color:#38A169;}
+
+.compteur{
+  position:absolute;bottom:12px;right:14px;
+  font-size:11px;font-weight:800;letter-spacing:.5px;
+  color:var(--muted);transition:color .2s;pointer-events:none;
+}
+.compteur.ok{color:#38A169;}
+.compteur.presque{color:#D97706;}
+.compteur.loin{color:var(--muted);}
+
+/* Barre de progression */
+.barre-wrap{height:3px;background:var(--gris2);border-radius:100px;margin-bottom:14px;overflow:hidden;}
+.barre-progress{
+  height:100%;border-radius:100px;
+  background:var(--gris3);
+  transition:width .2s ease, background .2s;
+  width:0%;
+}
+.barre-progress.ok{background:#38A169;}
+.barre-progress.presque{background:#D97706;}
+
+.indice-min{
+  font-size:12px;font-weight:700;color:var(--muted);
+  margin-bottom:14px;line-height:1.5;
+}
+
+.btn-publier{
+  padding:12px 24px;background:var(--noir);color:var(--blanc);
+  border:none;border-radius:100px;
+  font-family:'Nunito',sans-serif;font-size:13px;font-weight:900;
+  letter-spacing:1px;text-transform:uppercase;
+  cursor:pointer;transition:all .2s;
+}
 .btn-publier:hover{opacity:.8;}
+.btn-publier:disabled{opacity:.35;cursor:not-allowed;}
 
 /* AVIS LISTE */
 .avis-card{padding:20px 0;border-bottom:1px solid var(--gris2);}
@@ -95,7 +140,7 @@ textarea.avis-inp:focus{border-color:var(--noir);}
 .avis-etoiles{display:flex;gap:1px;}
 .avis-etoile{font-size:14px;}
 .avis-date{font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--muted);margin-left:auto;}
-.avis-texte{font-size:15px;font-weight:600;color:var(--texte2);line-height:1.6;}
+.avis-texte{font-size:15px;font-weight:600;color:var(--texte2);line-height:1.6;white-space:pre-wrap;}
 .avis-vide{font-size:15px;font-weight:700;color:var(--muted);text-align:center;padding:40px 0;}
 
 .toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--noir);color:var(--blanc);padding:12px 24px;border-radius:100px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;opacity:0;transition:all .3s;pointer-events:none;z-index:9999;white-space:nowrap;}
@@ -123,10 +168,58 @@ const SUPABASE_URL='https://dgnmqlwjfedhndftqdlp.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnbm1xbHdqZmVkaG5kZnRxZGxwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTUwNDcsImV4cCI6MjA4OTA5MTA0N30.w_D2a89bmgJu6hBtIG7Y62sAULyuEsx7gBcmGfLGzKE';
 const supa=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 let user=null,noteSelectionnee=0,pieceId=null;
+const MIN_CHARS=150;
+
+// ─── SÉCURITÉ ANTI-XSS ───────────────────────────────────────────────────────
+// Convertit les caractères HTML spéciaux en entités inoffensives.
+// Ainsi "<script>" devient "&lt;script&gt;" et s'affiche comme du texte pur,
+// sans jamais être exécuté par le navigateur.
+function echapper(str){
+  if(!str)return'';
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
 
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('ok');setTimeout(()=>t.classList.remove('ok'),2600);}
 function etoilesHTML(n,taille='15px'){return[1,2,3,4,5].map(i=>`<span class="avis-etoile" style="font-size:${taille};color:${i<=Math.round(n)?'#FFD700':'var(--gris2)'}">★</span>`).join('');}
 function setNote(n){noteSelectionnee=n;document.querySelectorAll('.etoile-btn').forEach((el,i)=>el.classList.toggle('actif',i<n));}
+
+// ─── COMPTEUR EN TEMPS RÉEL ───────────────────────────────────────────────────
+// Mis à jour à chaque frappe : colore la barre de progression et le compteur
+// pour guider l'utilisateur vers les 150 caractères requis.
+function mettreAJourCompteur(){
+  const ta=document.getElementById('avis-texte');
+  const cpt=document.getElementById('compteur');
+  const barre=document.getElementById('barre-progress');
+  const btn=document.getElementById('btn-publier');
+  if(!ta||!cpt||!barre)return;
+
+  const n=ta.value.trim().length;
+  const pct=Math.min(100,Math.round(n/MIN_CHARS*100));
+
+  // Texte du compteur
+  if(n>=MIN_CHARS){
+    cpt.textContent=`${n} car.`;
+    cpt.className='compteur ok';
+  } else {
+    cpt.textContent=`${n}/${MIN_CHARS}`;
+    cpt.className=n>=MIN_CHARS*.6?'compteur presque':'compteur loin';
+  }
+
+  // Barre de progression
+  barre.style.width=pct+'%';
+  barre.className=n>=MIN_CHARS?'barre-progress ok':n>=MIN_CHARS*.6?'barre-progress presque':'barre-progress';
+
+  // Bordure textarea
+  ta.className=n===0?'avis-inp':n>=MIN_CHARS?'avis-inp valide':'avis-inp invalide';
+
+  // Bouton désactivé si insuffisant
+  btn.disabled=n<MIN_CHARS;
+}
 
 async function toggleJournal(){
   if(!user){toast('Connectez-vous pour utiliser le journal.');return;}
@@ -145,6 +238,8 @@ async function publierAvis(){
   if(!user){toast('Connectez-vous pour publier un avis.');return;}
   if(!noteSelectionnee){toast('Choisissez une note.');return;}
   const commentaire=document.getElementById('avis-texte').value.trim();
+  // Double vérification côté JS (la première est le bouton désactivé)
+  if(commentaire.length<MIN_CHARS){toast(`Encore ${MIN_CHARS-commentaire.length} caractères pour un avis solide !`);return;}
   const{data:ex}=await supa.from('avis').select('id').eq('user_id',user.id).eq('piece_id',pieceId).maybeSingle();
   if(ex){await supa.from('avis').update({note:noteSelectionnee,commentaire}).eq('id',ex.id);}
   else{await supa.from('avis').insert({user_id:user.id,piece_id:pieceId,note:noteSelectionnee,commentaire});}
@@ -159,7 +254,9 @@ async function charger(){
   const{data:p}=await supa.from('pieces').select(`id,titre,auteur,metteur_scene,genre,description,affiche_url,duree_min,representations(date_debut,date_fin,prix_min,lien_reservation,theatres(nom,ville,adresse))`).eq('id',pieceId).single();
   if(!p){document.getElementById('contenu').innerHTML='<div style="padding:60px;text-align:center">Pièce introuvable.</div>';return;}
 
-  document.title=`Entracte — ${p.titre}`;
+  // On échappe le titre pour l'utiliser dans le <title> HTML sans risque
+  document.title=`Entracte — ${echapper(p.titre)}`;
+
   const{data:avisData}=await supa.from('avis').select(`note,commentaire,created_at,profils(pseudo)`).eq('piece_id',pieceId).order('created_at',{ascending:false}).limit(30);
   let dejaVu=false,monAvis=null;
   if(user){
@@ -174,21 +271,32 @@ async function charger(){
   const nbAvis=avisData?.length||0;
   const fmt=d=>d?new Date(d).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}):null;
 
+  // ── Données de la pièce : on passe tout par echapper() avant innerHTML ──
+  // Cela neutralise tout HTML malveillant éventuellement stocké en base
+  const titreSafe=echapper(p.titre);
+  const auteurSafe=echapper(p.auteur);
+  const genreSafe=echapper(p.genre);
+  const descSafe=echapper(p.description);
+  const nomThSafe=echapper(th?.nom);
+  const villeThSafe=echapper(th?.ville);
+
   document.getElementById('contenu').innerHTML=`
     <div class="hero-piece">
-      <div class="hero-bg-img" style="${p.affiche_url?`background-image:url('${p.affiche_url}')`:''}" ></div>
+      <div class="hero-bg-img" style="${p.affiche_url?`background-image:url('${echapper(p.affiche_url)}')`:''}" ></div>
       <div class="hero-bg-grad"></div>
       <div class="hero-inner">
         <div class="affiche-grande">
-          ${p.affiche_url?`<img src="${p.affiche_url}" alt="${p.titre}">`:`<div class="affiche-ph"><div class="affiche-ph-ico">🎭</div><div class="affiche-ph-titre">${p.titre}</div></div>`}
+          ${p.affiche_url
+            ?`<img src="${echapper(p.affiche_url)}" alt="${titreSafe}">`
+            :`<div class="affiche-ph"><div class="affiche-ph-ico">🎭</div><div class="affiche-ph-titre">${titreSafe}</div></div>`}
         </div>
         <div class="hero-infos">
-          ${p.genre?`<div class="hero-genre">${p.genre}</div>`:''}
-          <h1 class="hero-titre">${p.titre}</h1>
-          ${p.auteur?`<div class="hero-auteur">— ${p.auteur}</div>`:''}
+          ${genreSafe?`<div class="hero-genre">${genreSafe}</div>`:''}
+          <h1 class="hero-titre">${titreSafe}</h1>
+          ${auteurSafe?`<div class="hero-auteur">— ${auteurSafe}</div>`:''}
           ${moy?`<div class="hero-note"><div class="etoiles">${etoilesHTML(moy,'20px')}</div><span class="note-chiffre">${moy}/5</span><span class="note-count">(${nbAvis} avis)</span></div>`:''}
           <div class="hero-actions">
-            ${rep?.lien_reservation?`<a class="btn-reserver" href="${rep.lien_reservation}" target="_blank">Réserver →</a>`:''}
+            ${rep?.lien_reservation?`<a class="btn-reserver" href="${echapper(rep.lien_reservation)}" target="_blank" rel="noopener noreferrer">Réserver →</a>`:''}
             <button class="btn-journal ${dejaVu?'vu':''}" id="btn-journal" onclick="toggleJournal()">${dejaVu?'✓ Vu':'+ Marquer comme vu'}</button>
           </div>
         </div>
@@ -197,37 +305,57 @@ async function charger(){
 
     <div class="piece-body">
       <div class="info-band">
-        ${th?`<div class="info-bloc"><div class="info-label">Théâtre</div><div class="info-val">${th.nom}</div>${th.ville?`<div class="info-val info-val-sm" style="color:var(--muted);font-weight:700">${th.ville}</div>`:''}</div>`:''}
+        ${nomThSafe?`<div class="info-bloc"><div class="info-label">Théâtre</div><div class="info-val">${nomThSafe}</div>${villeThSafe?`<div class="info-val info-val-sm" style="color:var(--muted);font-weight:700">${villeThSafe}</div>`:''}</div>`:''}
         ${rep?.date_debut?`<div class="info-bloc"><div class="info-label">Dates</div><div class="info-val info-val-sm">${fmt(rep.date_debut)}${rep.date_fin?' → '+fmt(rep.date_fin):''}</div></div>`:''}
-        ${rep?.prix_min?`<div class="info-bloc"><div class="info-label">Tarif</div><div class="info-val">À partir de ${rep.prix_min}€</div></div>`:''}
-        ${p.duree_min?`<div class="info-bloc"><div class="info-label">Durée</div><div class="info-val">${p.duree_min} min</div></div>`:''}
+        ${rep?.prix_min?`<div class="info-bloc"><div class="info-label">Tarif</div><div class="info-val">À partir de ${echapper(String(rep.prix_min))}€</div></div>`:''}
+        ${p.duree_min?`<div class="info-bloc"><div class="info-label">Durée</div><div class="info-val">${echapper(String(p.duree_min))} min</div></div>`:''}
       </div>
 
-      ${p.description?`<div class="section"><div class="section-titre">À propos</div><div class="description">${p.description}</div></div>`:''}
+      ${descSafe?`<div class="section"><div class="section-titre">À propos</div><div class="description">${descSafe}</div></div>`:''}
 
       <div class="section">
         <div class="section-titre">Mon avis</div>
         <div class="avis-form">
           <div class="avis-form-label">Ma note</div>
           <div class="etoiles-form">${[1,2,3,4,5].map(i=>`<span class="etoile-btn ${monAvis&&i<=monAvis.note?'actif':''}" onclick="setNote(${i})">★</span>`).join('')}</div>
-          <textarea class="avis-inp" id="avis-texte" placeholder="Partagez votre ressenti…" rows="3">${monAvis?.commentaire||''}</textarea>
-          <button class="btn-publier" onclick="publierAvis()">${monAvis?'Modifier':'Publier mon avis'}</button>
+
+          <div class="textarea-wrap">
+            <textarea class="avis-inp" id="avis-texte" placeholder="Partagez votre ressenti… Décrivez l'ambiance, le jeu des acteurs, la mise en scène, ce qui vous a touché ou surpris." rows="4" oninput="mettreAJourCompteur()" maxlength="2000">${monAvis?.commentaire?echapper(monAvis.commentaire):''}</textarea>
+            <span class="compteur loin" id="compteur">0/${MIN_CHARS}</span>
+          </div>
+
+          <div class="barre-wrap"><div class="barre-progress" id="barre-progress"></div></div>
+
+          <div class="indice-min">✍️ Un avis solide fait au moins <strong>${MIN_CHARS} caractères</strong> — décrivez ce qui vous a marqué, le jeu des comédiens, la mise en scène…</div>
+
+          <button class="btn-publier" id="btn-publier" onclick="publierAvis()" disabled>${monAvis?'Modifier mon avis':'Publier mon avis'}</button>
         </div>
       </div>
 
       <div class="section">
         <div class="section-titre">Avis du public ${nbAvis?`<span style="font-size:15px;color:var(--muted);font-weight:700">(${nbAvis})</span>`:''}</div>
-        ${nbAvis?avisData.map(a=>`
-          <div class="avis-card">
+        ${nbAvis?avisData.map(a=>{
+          // ── CORRECTION XSS ── : on n'utilise plus innerHTML directement avec
+          // des données issues de la base. echapper() transforme tout code HTML
+          // en texte inoffensif affiché tel quel.
+          const pseudoSafe=echapper(a.profils?.pseudo||'Anonyme');
+          const commentaireSafe=echapper(a.commentaire);
+          return`<div class="avis-card">
             <div class="avis-top">
-              <div class="avis-pseudo">${a.profils?.pseudo||'Anonyme'}</div>
+              <div class="avis-pseudo">${pseudoSafe}</div>
               <div class="avis-etoiles">${etoilesHTML(a.note)}</div>
               <div class="avis-date">${new Date(a.created_at).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'})}</div>
             </div>
-            ${a.commentaire?`<div class="avis-texte">${a.commentaire}</div>`:''}
-          </div>`).join(''):`<div class="avis-vide">Soyez le premier à donner votre avis !</div>`}
+            ${commentaireSafe?`<div class="avis-texte">${commentaireSafe}</div>`:''}
+          </div>`;
+        }).join(''):`<div class="avis-vide">Soyez le premier à donner votre avis !</div>`}
       </div>
     </div>`;
+
+  // Si l'utilisateur a déjà un avis, on remet le compteur à jour après le rendu
+  if(monAvis?.commentaire){
+    mettreAJourCompteur();
+  }
 }
 
 window.addEventListener('DOMContentLoaded',async()=>{
