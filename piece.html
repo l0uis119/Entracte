@@ -331,9 +331,11 @@ async function charger(){
 
           <div class="barre-wrap"><div class="barre-progress" id="barre-progress"></div></div>
 
-          <div class="indice-min">Un avis doit faire au moins <strong>${MIN_CHARS} caractères</strong>. Décrivez ce qui vous a marqué, le jeu des comédiens, la mise en scène.</div>
+          <div class="indice-min" id="indice-min">Un avis doit faire au moins <strong>${MIN_CHARS} caractères</strong>. Décrivez ce qui vous a marqué, le jeu des comédiens, la mise en scène.</div>
 
-          <button class="btn-publier" id="btn-publier" onclick="publierAvis()" disabled>${monAvis?'Modifier mon avis':'Publier mon avis'}</button>
+          ${monAvis&&monAvis.commentaire.length<MIN_CHARS?`<div style="font-size:12px;font-weight:700;color:#E53E3E;margin-bottom:14px;">Votre avis précédent était trop court. Complétez-le pour le republier.</div>`:''}
+
+          <button class="btn-publier" id="btn-publier" onclick="publierAvis()" disabled>Publier mon avis</button>
         </div>
       </div>
 
