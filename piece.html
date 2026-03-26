@@ -230,7 +230,7 @@ async function toggleJournal(){
     btn.textContent='+ Marquer comme vu';btn.classList.remove('vu');toast('Retiré du journal.');
   } else {
     await supa.from('journal').insert({user_id:user.id,piece_id:pieceId,date_vue:new Date().toISOString().slice(0,10)});
-    btn.textContent='✓ Vu';btn.classList.add('vu');toast('🎭 Ajouté à votre journal !');
+    btn.textContent='✓ Vu';btn.classList.add('vu');toast('Ajouté à votre journal.');
   }
 }
 
@@ -298,10 +298,10 @@ async function charger(){
         <div class="hero-infos">
           ${genreSafe?`<div class="hero-genre">${genreSafe}</div>`:''}
           <h1 class="hero-titre">${titreSafe}</h1>
-          ${auteurSafe?`<div class="hero-auteur">— ${auteurSafe}</div>`:''}
+          ${auteurSafe?`<div class="hero-auteur">${auteurSafe}</div>`:''}
           ${moy?`<div class="hero-note"><div class="etoiles">${etoilesHTML(moy,'20px')}</div><span class="note-chiffre">${moy}/5</span><span class="note-count">(${nbAvis} avis)</span></div>`:''}
           <div class="hero-actions">
-            ${rep?.lien_reservation?`<a class="btn-reserver" href="${echapper(rep.lien_reservation)}" target="_blank" rel="noopener noreferrer">Réserver →</a>`:''}
+            ${rep?.lien_reservation?`<a class="btn-reserver" href="${echapper(rep.lien_reservation)}" target="_blank" rel="noopener noreferrer">Réserver</a>`:''}
             <button class="btn-journal ${dejaVu?'vu':''}" id="btn-journal" onclick="toggleJournal()">${dejaVu?'✓ Vu':'+ Marquer comme vu'}</button>
           </div>
         </div>
@@ -311,7 +311,7 @@ async function charger(){
     <div class="piece-body">
       <div class="info-band">
         ${nomThSafe?`<div class="info-bloc"><div class="info-label">Théâtre</div><div class="info-val">${nomThSafe}</div>${villeThSafe?`<div class="info-val info-val-sm" style="color:var(--muted);font-weight:700">${villeThSafe}</div>`:''}</div>`:''}
-        ${rep?.date_debut?`<div class="info-bloc"><div class="info-label">Dates</div><div class="info-val info-val-sm">${fmt(rep.date_debut)}${rep.date_fin?' → '+fmt(rep.date_fin):''}</div></div>`:''}
+        ${rep?.date_debut?`<div class="info-bloc"><div class="info-label">Dates</div><div class="info-val info-val-sm">${fmt(rep.date_debut)}${rep.date_fin?' au '+fmt(rep.date_fin):''}</div></div>`:''}
         ${rep?.prix_min?`<div class="info-bloc"><div class="info-label">Tarif</div><div class="info-val">À partir de ${echapper(String(rep.prix_min))}€</div></div>`:''}
         ${p.duree_min?`<div class="info-bloc"><div class="info-label">Durée</div><div class="info-val">${echapper(String(p.duree_min))} min</div></div>`:''}
       </div>
