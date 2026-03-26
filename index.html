@@ -598,7 +598,11 @@ async function savePseudo(){
   const btn=document.querySelector('#modal-pseudo .btn');btn.disabled=true;btn.textContent='…';
   const{error}=await supa.from('profils').update({pseudo}).eq('id',user.id);
   btn.disabled=false;btn.textContent="C'est parti !";
-  if(error)return toast('Erreur : '+error.message);
+  if(error){
+    // Code 23505 = violation de contrainte unique (pseudo déjà pris)
+    if(error.code==='23505')return toast('Ce pseudo est déjà pris.');
+    return toast('Une erreur est survenue, réessayez.');
+  }
   document.getElementById('modal-pseudo').classList.remove('ok');
   document.getElementById('nav-av').textContent=pseudo[0].toUpperCase();
   document.getElementById('hero-eye').textContent=`Bienvenue, ${pseudo} !`;
