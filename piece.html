@@ -11,8 +11,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.5/purify.min.js"></script>
 <style>
 :root{
-  --blanc:#FFFFFF;--noir:#111111;--gris:#F7F7F7;--gris2:#EEEEEE;--gris3:#CCCCCC;
-  --texte2:#666666;--muted:#AAAAAA;
+  --blanc:#FFFFFF;--noir:#1B3A6B;--gris:#F4F6FB;--gris2:#DDE3F0;--gris3:#A8B4CC;
+  --texte2:#3D5080;--muted:#7A90B5;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--blanc);color:var(--noir);font-family:'Nunito',sans-serif;font-weight:700;min-height:100vh;}
@@ -34,14 +34,14 @@ nav{height:68px;display:flex;align-items:center;justify-content:space-between;pa
 @media(max-width:640px){.hero-piece-wrap{padding:16px 16px 0;}}
 .hero-piece{background:var(--noir);position:relative;overflow:hidden;border-radius:24px;}
 .hero-bg-img{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.2;filter:blur(24px) saturate(.4);}
-.hero-bg-grad{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(17,17,17,.2) 0%,rgba(17,17,17,.98) 100%);}
+.hero-bg-grad{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(15,30,70,.15) 0%,rgba(15,30,70,.97) 100%);}
 .hero-inner{position:relative;z-index:2;display:flex;gap:40px;padding:48px 40px;align-items:flex-end;max-width:1000px;margin:0 auto;}
 @media(max-width:640px){.hero-inner{flex-direction:column;padding:28px 20px;align-items:flex-start;}}
 
 .affiche-grande{width:200px;flex-shrink:0;aspect-ratio:2/3;border-radius:16px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.6);}
 @media(max-width:640px){.affiche-grande{width:130px;}}
 .affiche-grande img{width:100%;height:100%;object-fit:cover;}
-.affiche-ph{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:#222;}
+.affiche-ph{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:#162D5A;}
 .affiche-ph-ico{font-size:36px;opacity:.3;}
 .affiche-ph-titre{font-size:13px;font-weight:800;color:rgba(255,255,255,.3);text-align:center;padding:0 12px;letter-spacing:.5px;}
 
@@ -97,7 +97,7 @@ textarea.avis-inp{
   outline:none;resize:vertical;min-height:110px;
   transition:border-color .2s;
 }
-textarea.avis-inp:focus{border-color:var(--noir);}
+textarea.avis-inp:focus{border-color:#B8952A;}
 textarea.avis-inp.invalide{border-color:#E53E3E;}
 textarea.avis-inp.valide{border-color:#38A169;}
 
