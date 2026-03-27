@@ -14,13 +14,13 @@
 <style>
 :root{
   --blanc:#FFFFFF;
-  --noir:#111111;
-  --gris:#F7F7F7;
-  --gris2:#EEEEEE;
-  --gris3:#CCCCCC;
-  --accent:#111111;
-  --texte2:#666666;
-  --muted:#AAAAAA;
+  --noir:#1B3A6B;
+  --gris:#F4F6FB;
+  --gris2:#DDE3F0;
+  --gris3:#A8B4CC;
+  --accent:#B8952A;
+  --texte2:#3D5080;
+  --muted:#7A90B5;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html{height:100%;}
@@ -109,7 +109,7 @@ body{
   border-bottom:3px solid transparent;
   margin-bottom:-2px;transition:all .2s;
 }
-.onglet.actif{color:var(--noir);border-bottom-color:var(--noir);}
+.onglet.actif{color:var(--noir);border-bottom-color:#B8952A;}
 
 .champ{margin-bottom:18px;}
 .champ label{
@@ -127,7 +127,7 @@ body{
   font-size:15px;font-weight:700;
   outline:none;transition:border-color .2s,background .2s;
 }
-.champ input:focus{border-color:var(--noir);background:var(--blanc);}
+.champ input:focus{border-color:#B8952A;background:var(--blanc);}
 .champ input::placeholder{color:var(--gris3);font-weight:600;}
 
 .btn{
@@ -324,7 +324,7 @@ nav{
 .badge-genre{
   position:absolute;top:10px;left:10px;
   padding:4px 12px;border-radius:100px;
-  background:rgba(17,17,17,.85);
+  background:rgba(27,58,107,.9);
   font-size:10px;font-weight:800;
   letter-spacing:1px;text-transform:uppercase;
   color:var(--blanc);backdrop-filter:blur(4px);
