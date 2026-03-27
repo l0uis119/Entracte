@@ -30,11 +30,13 @@ nav{height:68px;display:flex;align-items:center;justify-content:space-between;pa
 @keyframes rebond{0%,80%,100%{transform:scale(.4);opacity:.4;}40%{transform:scale(1);opacity:1;}}
 
 /* HERO */
-.hero-piece{background:var(--noir);position:relative;overflow:hidden;}
+.hero-piece-wrap{padding:32px 36px 0;max-width:1072px;margin:0 auto;}
+@media(max-width:640px){.hero-piece-wrap{padding:16px 16px 0;}}
+.hero-piece{background:var(--noir);position:relative;overflow:hidden;border-radius:24px;}
 .hero-bg-img{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.2;filter:blur(24px) saturate(.4);}
 .hero-bg-grad{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(17,17,17,.2) 0%,rgba(17,17,17,.98) 100%);}
-.hero-inner{position:relative;z-index:2;display:flex;gap:40px;padding:56px 40px;align-items:flex-end;max-width:1000px;margin:0 auto;}
-@media(max-width:640px){.hero-inner{flex-direction:column;padding:32px 20px;align-items:flex-start;}}
+.hero-inner{position:relative;z-index:2;display:flex;gap:40px;padding:48px 40px;align-items:flex-end;max-width:1000px;margin:0 auto;}
+@media(max-width:640px){.hero-inner{flex-direction:column;padding:28px 20px;align-items:flex-start;}}
 
 .affiche-grande{width:200px;flex-shrink:0;aspect-ratio:2/3;border-radius:16px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.6);}
 @media(max-width:640px){.affiche-grande{width:130px;}}
@@ -357,7 +359,7 @@ async function charger(){
   const villeThSafe=echapper(th?.ville);
 
   document.getElementById('contenu').innerHTML=`
-    <div class="hero-piece">
+    <div class="hero-piece-wrap"><div class="hero-piece">
       <div class="hero-bg-img" style="${p.affiche_url?`background-image:url('${echapper(p.affiche_url)}')`:''}" ></div>
       <div class="hero-bg-grad"></div>
       <div class="hero-inner">
@@ -377,7 +379,7 @@ async function charger(){
           </div>
         </div>
       </div>
-    </div>
+    </div></div>
 
     <div class="piece-body">
       <div class="info-band">
