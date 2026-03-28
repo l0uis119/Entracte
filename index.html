@@ -728,6 +728,15 @@ function doFilter(){render(pieces);}
 function openPiece(id){window.location.href=`piece.html?id=${id}`;}
 
 window.addEventListener('DOMContentLoaded',async()=>{
+  document.getElementById('co-pw').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+  document.getElementById('in-pw').addEventListener('keydown',e=>{if(e.key==='Enter')doSignup();});
+  document.getElementById('pseudo-inp').addEventListener('keydown',e=>{if(e.key==='Enter')savePseudo();});
+  const{data:{session}}=await supa.auth.getSession();
+  if(session?.user){
+    await onSignIn(session.user);
+  } else {
+    document.getElementById('page-auth').classList.add('visible');
+  }
   supa.auth.onAuthStateChange(async(ev,s)=>{
     if(ev==='SIGNED_IN'&&s?.user&&!user)await onSignIn(s.user);
     if(ev==='SIGNED_OUT')user=null;
