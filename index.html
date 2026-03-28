@@ -193,7 +193,7 @@ body{
   transition:opacity .6s ease, visibility .6s ease;
 }
 #splash.masquer{opacity:0;visibility:hidden;}
-#splash img{height:56px;object-fit:contain;}
+#splash img{width:280px;max-width:70vw;object-fit:contain;}
 
 /* ── NAV ── */
 nav{
@@ -735,8 +735,11 @@ function doFilter(){render(pieces);}
 function openPiece(id){window.location.href=`piece.html?id=${id}`;}
 
 window.addEventListener('DOMContentLoaded',async()=>{
+  const splashDebut=Date.now();
   function cacherSplash(){
-    document.getElementById('splash').classList.add('masquer');
+    const ecoule=Date.now()-splashDebut;
+    const attente=Math.max(0,1000-ecoule);
+    setTimeout(()=>document.getElementById('splash').classList.add('masquer'),attente);
   }
 
   document.getElementById('co-pw').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
