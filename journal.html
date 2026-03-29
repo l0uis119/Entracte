@@ -137,7 +137,7 @@ async function charger(){
   const{data:profil}=await supa.from('profils').select('pseudo').eq('id',u.id).single();
   const pseudo=profil?.pseudo||u.email.split('@')[0];
 
-  const{data:journal}=await supa.from('journal').select(`id,date_vue,pieces(id,titre,auteur,genre,affiche_url,representations(theatres(nom,ville)))`).eq('user_id',u.id).order('created_at',{ascending:false});
+  const{data:journal}=await supa.from('journal').select(`id,date_vue,pieces(id,titre,auteur,genre,affiche_url,duree_min,representations(theatres(nom,ville)))`).eq('user_id',u.id).order('created_at',{ascending:false});
   const{data:mesAvis}=await supa.from('avis').select('piece_id,note').eq('user_id',u.id);
   const avisMap={};(mesAvis||[]).forEach(a=>avisMap[a.piece_id]=a.note);
 
@@ -145,6 +145,10 @@ async function charger(){
   const genres=[...new Set((journal||[]).map(j=>j.pieces?.genre).filter(Boolean))];
   const theatres=[...new Set((journal||[]).map(j=>j.pieces?.representations?.[0]?.theatres?.nom).filter(Boolean))];
   const noteMoy=mesAvis?.length?(mesAvis.reduce((s,a)=>s+a.note,0)/mesAvis.length).toFixed(1):'—';
+  // Heures de théâtre : somme de duree_min de toutes les pièces vues, convertie en h ou h min
+  const totalMin=(journal||[]).reduce((s,j)=>s+(j.pieces?.duree_min||0),0);
+  const heuresLabel=totalMin===0?'—':totalMin<60?`${totalMin} min`:`${Math.floor(totalMin/60)}h${totalMin%60?String(totalMin%60).padStart(2,'0'):''}`;
+
 
   const groupes={};
   (journal||[]).forEach(j=>{
@@ -166,6 +170,7 @@ async function charger(){
       <div class="stat"><div class="stat-n">${theatres.length}</div><div class="stat-lbl">Théâtres</div></div>
       <div class="stat"><div class="stat-n">${genres.length}</div><div class="stat-lbl">Genres</div></div>
       <div class="stat"><div class="stat-n">${noteMoy}</div><div class="stat-lbl">Note moy.</div></div>
+      <div class="stat"><div class="stat-n" style="font-size:${totalMin>=600?'32px':'44px'}">${heuresLabel}</div><div class="stat-lbl">Au théâtre</div></div>
     </div>
 
     <div class="journal-body">
