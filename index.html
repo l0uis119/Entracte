@@ -291,6 +291,23 @@ nav{
 .puce:hover{border-color:var(--noir);color:var(--noir);}
 .puce.actif{background:var(--noir);border-color:var(--noir);color:var(--blanc);}
 
+/* ── SÉLECTEUR DE TRI ── */
+.tri-select{
+  appearance:none;-webkit-appearance:none;
+  padding:8px 32px 8px 14px;
+  border:2px solid var(--gris2);
+  border-radius:100px;
+  background:var(--blanc) url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237A90B5' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center;
+  font-family:'Nunito',sans-serif;
+  font-size:12px;font-weight:800;
+  letter-spacing:.5px;
+  color:var(--texte2);
+  cursor:pointer;
+  outline:none;
+  transition:border-color .2s;
+}
+.tri-select:hover,.tri-select:focus{border-color:var(--noir);color:var(--noir);}
+
 /* ── SECTION ── */
 .section{padding:24px 36px 60px;max-width:1100px;margin:0 auto;width:100%;}
 .section-top{
@@ -561,7 +578,15 @@ nav{
   <div class="section">
     <div class="section-top">
       <h2 class="section-titre">Spectacles à l'affiche</h2>
-      <span class="section-meta" id="geo-lbl">Paris et environs</span>
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+        <span class="section-meta" id="geo-lbl">Paris et environs</span>
+        <select class="tri-select" id="tri-select" onchange="doFilter()">
+          <option value="recent">Les plus récents</option>
+          <option value="note">Mieux notés</option>
+          <option value="prix">Prix croissant</option>
+          <option value="distance">Distance</option>
+        </select>
+      </div>
     </div>
     <div class="grille" id="grille">
       <div class="loader"><div class="lp"></div><div class="lp"></div><div class="lp"></div></div>
@@ -587,7 +612,7 @@ nav{
 const SUPABASE_URL='https://dgnmqlwjfedhndftqdlp.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnbm1xbHdqZmVkaG5kZnRxZGxwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTUwNDcsImV4cCI6MjA4OTA5MTA0N30.w_D2a89bmgJu6hBtIG7Y62sAULyuEsx7gBcmGfLGzKE';
 const supa=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let user=null,pieces=[],coords=null,filtre='';
+let user=null,pieces=[],coords=null,filtre='',notesMap={};
 
 function switchTab(t){
   document.querySelectorAll('.onglet').forEach((el,i)=>el.classList.toggle('actif',(i===0)===(t==='co')));
@@ -692,15 +717,48 @@ function askGeo(){
 async function loadPieces(){
   const g=document.getElementById('grille');
   g.innerHTML='<div class="loader"><div class="lp"></div><div class="lp"></div><div class="lp"></div></div>';
-  const{data,error}=await supa.from('pieces').select(`id,titre,auteur,genre,affiche_url,representations(theatre_id,date_debut,prix_min,theatres(nom,ville,latitude,longitude))`).order('created_at',{ascending:false}).limit(60);
+  const[{data,error},{data:avisData}]=await Promise.all([
+    supa.from('pieces').select(`id,titre,auteur,genre,affiche_url,created_at,representations(theatre_id,date_debut,prix_min,theatres(nom,ville,latitude,longitude))`).order('created_at',{ascending:false}).limit(60),
+    supa.from('avis').select('piece_id,note')
+  ]);
   if(error){g.innerHTML=`<div class="vide"><div class="vide-titre">Erreur</div><div class="vide-desc">${error.message}</div></div>`;return;}
+  // Construire un index note moyenne par piece_id — permet le tri "Mieux noté" sans requête supplémentaire
+  notesMap={};
+  (avisData||[]).forEach(a=>{
+    if(!notesMap[a.piece_id])notesMap[a.piece_id]={total:0,nb:0};
+    notesMap[a.piece_id].total+=a.note;
+    notesMap[a.piece_id].nb++;
+  });
   pieces=data||[];render(pieces);
 }
 
 function render(list){
   const g=document.getElementById('grille');
   const q=document.getElementById('s-inp').value.toLowerCase();
-  const f=list.filter(p=>(!filtre||p.genre===filtre)&&(!q||p.titre?.toLowerCase().includes(q)||p.auteur?.toLowerCase().includes(q)));
+  const tri=document.getElementById('tri-select')?.value||'recent';
+  let f=list.filter(p=>(!filtre||p.genre===filtre)&&(!q||p.titre?.toLowerCase().includes(q)||p.auteur?.toLowerCase().includes(q)));
+  // Tri : chaque option réordonne le tableau filtré sans retourner sur Supabase
+  if(tri==='note'){
+    f=[...f].sort((a,b)=>{
+      const ma=notesMap[a.id]?notesMap[a.id].total/notesMap[a.id].nb:0;
+      const mb=notesMap[b.id]?notesMap[b.id].total/notesMap[b.id].nb:0;
+      return mb-ma;
+    });
+  } else if(tri==='prix'){
+    f=[...f].sort((a,b)=>{
+      const pa=a.representations?.[0]?.prix_min??9999;
+      const pb=b.representations?.[0]?.prix_min??9999;
+      return pa-pb;
+    });
+  } else if(tri==='distance'&&coords){
+    f=[...f].sort((a,b)=>{
+      const tha=a.representations?.[0]?.theatres,thb=b.representations?.[0]?.theatres;
+      const da=tha?.latitude?distKm(coords,tha):9999;
+      const db=thb?.latitude?distKm(coords,thb):9999;
+      return da-db;
+    });
+  }
+  // tri==='recent' : l'ordre Supabase (created_at desc) est déjà le bon
   if(!f.length){g.innerHTML='<div class="vide"><div class="vide-titre">Aucun spectacle</div><div class="vide-desc">Essayez un autre filtre.</div></div>';return;}
   g.innerHTML=f.map((p,i)=>card(p,i)).join('');
 }
