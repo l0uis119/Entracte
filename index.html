@@ -153,6 +153,25 @@ body{
 }
 .auth-err.ok{display:block;}
 
+/* ── INVITÉ ── */
+.auth-invite{
+  margin-top:20px;text-align:center;
+  padding-top:18px;border-top:1px solid var(--gris2);
+}
+.auth-invite button{
+  background:none;border:none;cursor:pointer;
+  font-family:'Nunito',sans-serif;
+  font-size:13px;font-weight:800;
+  color:var(--muted);letter-spacing:.3px;
+  text-decoration:underline;text-underline-offset:3px;
+  transition:color .2s;padding:0;
+}
+.auth-invite button:hover{color:var(--noir);}
+.auth-invite span{
+  display:block;margin-top:6px;
+  font-size:11px;font-weight:600;color:var(--gris3);
+}
+
 /* ── MODAL PSEUDO ── */
 #modal-pseudo{
   position:fixed;inset:0;
@@ -274,8 +293,21 @@ nav{
 .filtres{
   padding:24px 36px 8px;
   max-width:1100px;margin:0 auto;width:100%;
-  display:flex;gap:8px;flex-wrap:wrap;
+  display:flex;gap:8px;
   justify-content:center;
+  flex-wrap:wrap;
+}
+@media(max-width:640px){
+  .filtres{
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    justify-content:flex-start;
+    padding:16px 20px 8px;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .filtres::-webkit-scrollbar{display:none;}
+  .puce{flex-shrink:0;}
 }
 .puce{
   padding:9px 20px;
@@ -343,8 +375,8 @@ nav{
 @keyframes up{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
 
 .carte-aff{width:100%;aspect-ratio:2/3;background:var(--gris);position:relative;overflow:hidden;}
-.carte-aff img{width:100%;height:100%;object-fit:cover;transition:transform .5s;}
-.carte:hover .carte-aff img{transform:scale(1.05);}
+.carte-aff img{width:100%;height:100%;object-fit:cover;transition:transform .4s cubic-bezier(.2,.8,.2,1);}
+.carte:hover .carte-aff img{transform:scale(1.04);}
 .ph{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;}
 .ph-ico{font-size:32px;opacity:.15;}
 .ph-titre{font-size:13px;font-weight:800;color:var(--gris3);text-align:center;padding:0 12px;letter-spacing:.3px;}
@@ -513,6 +545,10 @@ nav{
       <button class="btn" onclick="doSignup()">Créer mon compte</button>
     </div>
     <div class="auth-err" id="auth-err"></div>
+    <div class="auth-invite">
+      <button onclick="entrerEnInvite()">Continuer en tant qu'invité</button>
+      <span>Vous pourrez consulter les spectacles sans vous connecter.</span>
+    </div>
   </div>
 </div>
 
@@ -538,7 +574,9 @@ nav{
     <div class="nav-r">
       <a href="journal.html" class="nav-btn">Journal</a>
       <a href="profil.html" style="text-decoration:none;">
-        <div class="nav-av" id="nav-av">?</div>
+        <div class="nav-av" id="nav-av">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
       </a>
     </div>
   </nav>
@@ -647,6 +685,16 @@ async function doLogout(){
   document.getElementById('page-auth').classList.add('visible');
 }
 
+function entrerEnInvite(){
+  // Masque la page auth et affiche le main sans créer de session
+  // L'utilisateur peut naviguer librement mais journal/profil demanderont une connexion
+  sessionStorage.setItem('inviteMode','1');
+  document.getElementById('page-auth').classList.remove('visible');
+  document.getElementById('page-main').classList.add('ok');
+  document.getElementById('hero-eye').textContent='Ce soir à l\'affiche';
+  geoLoad();
+}
+
 async function onSignIn(u){
   user=u;
   const{data:profil}=await supa.from('profils').select('pseudo').eq('id',u.id).single();
@@ -658,6 +706,7 @@ async function onSignIn(u){
   }
   document.getElementById('page-auth').classList.remove('visible');
   document.getElementById('page-main').classList.add('ok');
+  // Avatar : initiale du pseudo en texte
   document.getElementById('nav-av').textContent=pseudo[0].toUpperCase();
   const h=new Date().getHours();
   const s=h<12?'Bonjour':h<18?'Bon après-midi':'Bonsoir';
@@ -792,6 +841,9 @@ window.addEventListener('DOMContentLoaded',async()=>{
   const{data:{session}}=await supa.auth.getSession();
   if(session?.user){
     await onSignIn(session.user);
+  } else if(sessionStorage.getItem('inviteMode')==='1'){
+    // L'utilisateur a déjà choisi le mode invité dans cet onglet — on le garde
+    entrerEnInvite();
   } else {
     document.getElementById('page-auth').classList.add('visible');
   }
