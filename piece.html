@@ -42,8 +42,7 @@ nav{height:68px;display:flex;align-items:center;justify-content:space-between;pa
 
 .affiche-grande{width:200px;flex-shrink:0;aspect-ratio:2/3;border-radius:16px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.6);}
 @media(max-width:640px){.affiche-grande{width:130px;}}
-.affiche-grande img{width:100%;height:100%;object-fit:cover;transition:transform .4s cubic-bezier(.2,.8,.2,1);}
-.affiche-grande:hover img{transform:scale(1.04);}
+.affiche-grande img{width:100%;height:100%;object-fit:cover;}
 .affiche-ph{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:#162D5A;}
 .affiche-ph-ico{font-size:36px;opacity:.3;}
 .affiche-ph-titre{font-size:13px;font-weight:800;color:rgba(255,255,255,.3);text-align:center;padding:0 12px;letter-spacing:.5px;}
@@ -65,9 +64,6 @@ nav{height:68px;display:flex;align-items:center;justify-content:space-between;pa
 .btn-journal{padding:13px 20px;border-radius:100px;border:2px solid rgba(255,255,255,.25);background:transparent;font-family:'Nunito',sans-serif;font-size:13px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.7);cursor:pointer;transition:all .2s;}
 .btn-journal:hover{border-color:rgba(255,255,255,.6);color:var(--blanc);}
 .btn-journal.vu{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.5);color:var(--blanc);}
-.btn-avoir{padding:13px 20px;border-radius:100px;border:2px solid rgba(255,255,255,.25);background:transparent;font-family:'Nunito',sans-serif;font-size:13px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.7);cursor:pointer;transition:all .2s;}
-.btn-avoir:hover{border-color:rgba(255,255,255,.6);color:var(--blanc);}
-.btn-avoir.actif{background:rgba(184,149,42,.25);border-color:#B8952A;color:#FFD700;}
 
 /* BODY */
 .piece-body{max-width:1000px;margin:0 auto;padding:0 40px 80px;}
@@ -151,7 +147,6 @@ textarea.avis-inp.valide{border-color:#38A169;}
 .avis-etoile{font-size:14px;}
 .avis-date{font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--muted);margin-left:auto;}
 .avis-texte{font-size:15px;font-weight:600;color:var(--texte2);line-height:1.6;white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word;}
-.avis-texte em{font-style:italic;color:var(--noir);font-weight:700;}
 .avis-vide{font-size:15px;font-weight:700;color:var(--muted);text-align:center;padding:40px 0;}
 
 /* LIKES */
@@ -221,19 +216,12 @@ let user=null,noteSelectionnee=0,pieceId=null;
 const MIN_CHARS=150;
 
 // ─── SÉCURITÉ ANTI-XSS via DOMPurify ────────────────────────────────────────
-// echapper() : zéro HTML — pour les données de la pièce (titre, auteur, etc.)
+// DOMPurify est une librairie de référence maintenue par l'OWASP.
+// FORCE_BODY permet de traiter des fragments (pas juste des documents complets).
+// ALLOWED_TAGS:[] interdit tout HTML — on veut du texte pur uniquement.
 function echapper(str){
   if(!str)return'';
   return DOMPurify.sanitize(String(str),{ALLOWED_TAGS:[],ALLOWED_ATTR:[]});
-}
-// formaterCommentaire() : autorise uniquement <em> pour l'italique *texte*
-// 1. On remplace *texte* par <em>texte</em> via regex
-// 2. DOMPurify passe ensuite avec ALLOWED_TAGS:['em'] — tout autre HTML est supprimé
-// Le résultat est sûr à insérer en innerHTML
-function formaterCommentaire(str){
-  if(!str)return'';
-  const avecItalique=String(str).replace(/\*([^*\n]+)\*/g,'<em>$1</em>');
-  return DOMPurify.sanitize(avecItalique,{ALLOWED_TAGS:['em'],ALLOWED_ATTR:[]});
 }
 
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('ok');setTimeout(()=>t.classList.remove('ok'),2600);}
@@ -286,20 +274,7 @@ async function toggleJournal(){
   }
 }
 
-async function toggleFavori(){
-  if(!user){toast('Connectez-vous pour enregistrer un favori.');return;}
-  const btn=document.getElementById('btn-avoir');
-  const{data:ex}=await supa.from('favoris').select('id').eq('user_id',user.id).eq('piece_id',pieceId).maybeSingle();
-  if(ex){
-    await supa.from('favoris').delete().eq('id',ex.id);
-    btn.textContent='+ À voir';btn.classList.remove('actif');toast('Retiré de votre liste.');
-  } else {
-    await supa.from('favoris').insert({user_id:user.id,piece_id:pieceId});
-    btn.textContent='★ À voir';btn.classList.add('actif');toast('Ajouté à votre liste.');
-  }
-}
-
-
+async function publierAvis(){
   if(!user){toast('Connectez-vous pour publier un avis.');return;}
   if(!noteSelectionnee){toast('Choisissez une note.');return;}
   const commentaire=document.getElementById('avis-texte').value.trim();
@@ -363,16 +338,12 @@ async function charger(){
     likesIndex[l.avis_id].total++;
     if(user&&l.user_id===user.id)likesIndex[l.avis_id].monLike=true;
   });
-  let dejaVu=false,monAvis=null,dejaFavori=false;
+  let dejaVu=false,monAvis=null;
   if(user){
-    const[{data:j},{data:a},{data:fav}]=await Promise.all([
-      supa.from('journal').select('id').eq('user_id',user.id).eq('piece_id',pieceId).maybeSingle(),
-      supa.from('avis').select('id,note,commentaire').eq('user_id',user.id).eq('piece_id',pieceId).maybeSingle(),
-      supa.from('favoris').select('id').eq('user_id',user.id).eq('piece_id',pieceId).maybeSingle()
-    ]);
+    const{data:j}=await supa.from('journal').select('id').eq('user_id',user.id).eq('piece_id',pieceId).maybeSingle();
     dejaVu=!!j;
+    const{data:a}=await supa.from('avis').select('id,note,commentaire').eq('user_id',user.id).eq('piece_id',pieceId).maybeSingle();
     monAvis=a;if(monAvis)noteSelectionnee=monAvis.note;
-    dejaFavori=!!fav;
   }
 
   const rep=p.representations?.[0],th=rep?.theatres;
@@ -407,7 +378,6 @@ async function charger(){
           <div class="hero-actions">
             ${rep?.lien_reservation?`<a class="btn-reserver" href="${echapper(rep.lien_reservation)}" target="_blank" rel="noopener noreferrer">Réserver</a>`:''}
             <button class="btn-journal ${dejaVu?'vu':''}" id="btn-journal" onclick="toggleJournal()">${dejaVu?'✓ Vu':'+ Marquer comme vu'}</button>
-            <button class="btn-avoir ${dejaFavori?'actif':''}" id="btn-avoir" onclick="toggleFavori()">${dejaFavori?'★ À voir':'+ À voir'}</button>
           </div>
         </div>
       </div>
@@ -430,7 +400,7 @@ async function charger(){
           <div class="etoiles-form">${[1,2,3,4,5].map(i=>`<span class="etoile-btn ${monAvis&&i<=monAvis.note?'actif':''}" onclick="setNote(${i})">★</span>`).join('')}</div>
 
           <div class="textarea-wrap">
-            <textarea class="avis-inp" id="avis-texte" placeholder="Partagez votre ressenti… Décrivez l'ambiance, le jeu des acteurs, la mise en scène. Astuce : entourez un mot d'*astérisques* pour le mettre en italique." rows="4" oninput="mettreAJourCompteur()" maxlength="2000">${monAvis?.commentaire||''}</textarea>
+            <textarea class="avis-inp" id="avis-texte" placeholder="Partagez votre ressenti… Décrivez l'ambiance, le jeu des acteurs, la mise en scène, ce qui vous a touché ou surpris." rows="4" oninput="mettreAJourCompteur()" maxlength="2000">${monAvis?.commentaire||''}</textarea>
             <span class="compteur loin" id="compteur">0/${MIN_CHARS}</span>
           </div>
 
@@ -449,7 +419,7 @@ async function charger(){
         <div class="section-titre">Avis du public ${nbAvis?`<span style="font-size:15px;color:var(--muted);font-weight:700">(${nbAvis})</span>`:''}</div>
         ${nbAvis?avisData.map(a=>{
           const pseudoSafe=echapper(a.profils?.pseudo||'Anonyme');
-          const commentaireSafe=formaterCommentaire(a.commentaire);
+          const commentaireSafe=echapper(a.commentaire);
           const like=likesIndex[a.id]||{total:0,monLike:false};
           const estMoi=user&&a.user_id===user.id;
           return`<div class="avis-card">
