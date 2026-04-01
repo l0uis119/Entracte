@@ -267,10 +267,24 @@ async function toggleJournal(){
   const{data:ex}=await supa.from('journal').select('id').eq('user_id',user.id).eq('piece_id',pieceId).maybeSingle();
   if(ex){
     await supa.from('journal').delete().eq('id',ex.id);
-    btn.textContent='+ Marquer comme vu';btn.classList.remove('vu');toast('Retiré du journal.');
+    btn.textContent='+ Marquer comme vu';btn.classList.remove('vu');toast('Retire du journal.');
   } else {
     await supa.from('journal').insert({user_id:user.id,piece_id:pieceId,date_vue:new Date().toISOString().slice(0,10)});
-    btn.textContent='✓ Vu';btn.classList.add('vu');toast('Ajouté à votre journal.');
+    btn.textContent='✓ Vu';btn.classList.add('vu');toast('Ajoute a votre journal.');
+  }
+}
+
+async function toggleFavoriPiece(){
+  if(!user){toast('Connectez-vous pour sauvegarder.');return;}
+  const btn=document.getElementById('btn-favori');
+  const estFav=btn.classList.contains('vu');
+  // Mise a jour optimiste
+  btn.classList.toggle('vu');
+  btn.textContent=estFav?'♡ A voir':'♥ Dans ma liste';
+  if(estFav){
+    await supa.from('favoris').delete().eq('user_id',user.id).eq('piece_id',pieceId);
+  } else {
+    await supa.from('favoris').insert({user_id:user.id,piece_id:pieceId});
   }
 }
 
@@ -338,11 +352,15 @@ async function charger(){
     likesIndex[l.avis_id].total++;
     if(user&&l.user_id===user.id)likesIndex[l.avis_id].monLike=true;
   });
-  let dejaVu=false,monAvis=null;
+  let dejaVu=false,monAvis=null,estFavori=false;
   if(user){
-    const{data:j}=await supa.from('journal').select('id').eq('user_id',user.id).eq('piece_id',pieceId).maybeSingle();
+    const[{data:j},{data:a},{data:fav}]=await Promise.all([
+      supa.from('journal').select('id').eq('user_id',user.id).eq('piece_id',pieceId).maybeSingle(),
+      supa.from('avis').select('id,note,commentaire').eq('user_id',user.id).eq('piece_id',pieceId).maybeSingle(),
+      supa.from('favoris').select('id').eq('user_id',user.id).eq('piece_id',pieceId).maybeSingle()
+    ]);
     dejaVu=!!j;
-    const{data:a}=await supa.from('avis').select('id,note,commentaire').eq('user_id',user.id).eq('piece_id',pieceId).maybeSingle();
+    estFavori=!!fav;
     monAvis=a;if(monAvis)noteSelectionnee=monAvis.note;
   }
 
@@ -376,8 +394,9 @@ async function charger(){
           ${auteurSafe?`<div class="hero-auteur">${auteurSafe}</div>`:''}
           ${moy?`<div class="hero-note"><div class="etoiles">${etoilesHTML(moy,'20px')}</div><span class="note-chiffre">${moy}/5</span><span class="note-count">(${nbAvis} avis)</span></div>`:''}
           <div class="hero-actions">
-            ${rep?.lien_reservation?`<a class="btn-reserver" href="${echapper(rep.lien_reservation)}" target="_blank" rel="noopener noreferrer">Réserver</a>`:''}
+            ${rep?.lien_reservation?`<a class="btn-reserver" href="${echapper(rep.lien_reservation)}" target="_blank" rel="noopener noreferrer">Reserver</a>`:''}
             <button class="btn-journal ${dejaVu?'vu':''}" id="btn-journal" onclick="toggleJournal()">${dejaVu?'✓ Vu':'+ Marquer comme vu'}</button>
+            <button class="btn-journal ${estFavori?'vu':''}" id="btn-favori" onclick="toggleFavoriPiece()">${estFavori?'♥ Dans ma liste':'♡ A voir'}</button>
           </div>
         </div>
       </div>
