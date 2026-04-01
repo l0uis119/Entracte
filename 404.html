@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAE+klEQVR4nO2aWVCVVQCAv//8l3sv9152EAQBcQxRQW1IVNzNzBxlkjT3Nc2idCyjnCydadQay61GM8cxH8xl1CaNtNGEFCuVEBQ3RNkUBsENgetd/78He8WZejkP/N/MeToP5zvfnHOejhKX+Y5OB0bIFpCNEUC2gGyMALIFZGMEkC0gGyOAbAHZGAFkC8jGCCBbQDZGANkCsjECyBaQjRFAtoBsjACyBWRjBJAtIBsjgGwB2RgBZAvIpsMHMLU3UXN6M3Nzt5GXX8qGT6fT0vKEvPwS5mQP443lOxjavwfHvs9FCBPL1+3h2q07eDw+hg/oxRff5THz1UwePmzFajFxtrSS2OgwXn8lg1WbDjEtaxBffTybttaH1FUX8ehBNZcvHMJuj+KliaupqylGVQMIiUgiPiGVM8XXWbnhALOzR7Jt7wlURdC9aydcbi8mk0rB2XLmZg/mXGkF8bGRHD5xgRU5Wei6wuGTxRzdmUvvscv/WwBVVYkICyIgQDDvtREApKcm0tLmISEunJIrVezYX8BbM8YQFeZA6R7PnIlDsFgtrNx4kL49Epk8bgD5f16m8HwFiXFRLJoxhqKyKr7edZwl87Mw+yrI2/ceQlUIi0wk0B6Cz++hb8ZknjhbuH7pGOGR8Sxbu59Rg1KYN3k4aSlxTMrZRFx0KLvWv83GnUf59VQZH76ZxeUbNeQVXEQHFk0fTXCQndQesfh9Wrsn4JlXQNc0PF4/63ccYdy8z0nsEo0qFMaP7MeCqSPJWbGTqzdvYzardO0SSa/kBO7dbybAZOJRi5Pw0CBGZabi8vq4e7+Zmrommh48Zkj/ZCJD7NjscTzXezQZwxZgc3RC03Xqqoupv32FsuIfiYiIpuG+m2sVtYSH2tF1nbTkeC4cWcuBrUuxBwbS2uZGCMGjxy0MzehNeKgDn9fP1t3HmbhoHQmxUYSHBf/PAIAqFNKSExmcnoLNakZXFDw+H2uWTSG9TxJzPviWyttNKIqCpumoqoKu6wgh0HWd1tYnWMwmGu81s33PcQr+usbYYX0JclhwhMZhtgZxsWg/zpZG7tZfRdf8xHROxmoNxmR2EOwIxmG3kpdfgtfrw2KxYAu0UHzp1r/rKCiAEAJN09D8GopQ6Nk9luEDemGzmZ+1xWcHEEKgCJUhGT1Z8W42Z4rLKblSTaDFjKqq/LB5MS2tbrbvO0WIw4YQCqrJBCiYVAVFUbCYzbjcXvqkJLAmdwYLp4xg9ZYj3KiqI8Ak6DdwFragaGLinycmNpXO8ak0NVYhhCAsKoVOEXamTRhI4dlyZr6/hd0/FTJh4ZcU/l2OoijomoamaQhFIMTT4fP7SU/rxtL54zl97jrnS8rb3WO7b4Db46G2rhGf18NHn+/GYbdworCMzBdSqKxpwOVykZwUy6ZPZjEpZz2KePrR5Gp5LX6fj/JbdwCormvA7XZzs7IOp8tNaIgVp9PJyT/KSE6KJTImhaypmzn582dY7RE425pxOWvoljICk8mCx+Nh1ZJJOF0eDh0t4pffS8l+OZ0FU1/E7fFyp/4BigI3quuJj4uiqrYBh83Kyg0HCQ2x8VthGXu/WdxuAMX4ItPBMQLIFpCNEUC2gGyMALIFZGMEkC0gGyOAbAHZGAFkC8jGCCBbQDZGANkCsjECyBaQjRFAtoBsjACyBWRjBJAtIBsjgGwB2XT4AP8AHPeogsHPoI4AAAAASUVORK5CYII=">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Entracte - Page introuvable</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blanc:#FFFFFF;
+  --noir:#1B3A6B;
+  --gris:#F4F6FB;
+  --gris2:#DDE3F0;
+  --gris3:#A8B4CC;
+  --muted:#7A90B5;
+  --accent:#B8952A;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  background:var(--blanc);
+  color:var(--noir);
+  font-family:'Nunito',sans-serif;
+  font-weight:700;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  min-height:100vh;
+  padding:40px 20px;
+  text-align:center;
+}
+
+.rideau{
+  position:fixed;
+  top:0;left:0;right:0;
+  height:5px;
+  background:linear-gradient(90deg,var(--noir) 0%,var(--accent) 50%,var(--noir) 100%);
+  background-size:200% 100%;
+  animation:rideau 3s ease-in-out infinite;
+}
+@keyframes rideau{
+  0%{background-position:0% 0%;}
+  50%{background-position:100% 0%;}
+  100%{background-position:0% 0%;}
+}
+
+.scene{max-width:480px;width:100%;}
+
+.grand-nombre{
+  font-size:140px;
+  font-weight:900;
+  color:var(--gris2);
+  line-height:1;
+  letter-spacing:-8px;
+  margin-bottom:0;
+  user-select:none;
+}
+.grand-nombre span{color:var(--accent);}
+
+.masques{
+  font-size:52px;
+  margin-bottom:20px;
+  animation:balancement 2.4s ease-in-out infinite;
+  display:inline-block;
+}
+@keyframes balancement{
+  0%,100%{transform:rotate(-5deg);}
+  50%{transform:rotate(5deg);}
+}
+
+.titre-404{
+  font-size:30px;
+  font-weight:900;
+  color:var(--noir);
+  letter-spacing:-1px;
+  margin-bottom:12px;
+}
+@media(max-width:480px){
+  .grand-nombre{font-size:100px;letter-spacing:-4px;}
+  .titre-404{font-size:22px;}
+}
+
+.sous-titre{
+  font-size:15px;
+  font-weight:600;
+  color:var(--muted);
+  line-height:1.65;
+  margin-bottom:36px;
+}
+
+.actions{
+  display:flex;
+  gap:12px;
+  justify-content:center;
+  flex-wrap:wrap;
+  margin-bottom:48px;
+}
+.btn-principal{
+  padding:14px 28px;
+  background:var(--noir);
+  color:var(--blanc);
+  border-radius:100px;
+  font-family:'Nunito',sans-serif;
+  font-size:13px;
+  font-weight:900;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  text-decoration:none;
+  transition:all .25s;
+  border:none;
+  cursor:pointer;
+}
+.btn-principal:hover{opacity:.85;transform:translateY(-2px);}
+.btn-secondaire{
+  padding:14px 28px;
+  background:transparent;
+  color:var(--muted);
+  border:2px solid var(--gris2);
+  border-radius:100px;
+  font-family:'Nunito',sans-serif;
+  font-size:13px;
+  font-weight:900;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  text-decoration:none;
+  transition:all .25s;
+  cursor:pointer;
+}
+.btn-secondaire:hover{border-color:var(--noir);color:var(--noir);}
+
+.suggestions{
+  padding-top:28px;
+  border-top:2px solid var(--gris2);
+}
+.sug-titre{
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:16px;
+}
+.sug-liens{
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+.sug-lien{
+  padding:9px 18px;
+  border:2px solid var(--gris2);
+  border-radius:100px;
+  font-size:13px;
+  font-weight:800;
+  color:var(--noir);
+  text-decoration:none;
+  transition:all .2s;
+}
+.sug-lien:hover{background:var(--noir);border-color:var(--noir);color:var(--blanc);}
+</style>
+</head>
+<body>
+
+<div class="rideau"></div>
+
+<div class="scene">
+  <div class="grand-nombre">4<span>0</span>4</div>
+  <div class="masques">🎭</div>
+
+  <h1 class="titre-404">Ce rideau ne se leve pas</h1>
+  <p class="sous-titre">
+    La page que vous cherchez n'existe pas ou a ete deplacee.<br>
+    Retournez a l'accueil pour decouvrir les spectacles a l'affiche.
+  </p>
+
+  <div class="actions">
+    <a href="/index.html" class="btn-principal">Retour a l'accueil</a>
+    <a href="javascript:history.back()" class="btn-secondaire">Page precedente</a>
+  </div>
+
+  <div class="suggestions">
+    <div class="sug-titre">Ou allez directement vers</div>
+    <div class="sug-liens">
+      <a href="/index.html" class="sug-lien">Spectacles</a>
+      <a href="/journal.html" class="sug-lien">Mon journal</a>
+      <a href="/profil.html" class="sug-lien">Mon profil</a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
