@@ -277,6 +277,17 @@ nav{
   display:flex;gap:8px;flex-wrap:wrap;
   justify-content:center;
 }
+@media(max-width:640px){
+  .filtres{
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    justify-content:flex-start;
+    padding:16px 20px 8px;
+    scrollbar-width:none;
+    -ms-overflow-style:none;
+  }
+  .filtres::-webkit-scrollbar{display:none;}
+}
 .puce{
   padding:9px 20px;
   border:2px solid var(--gris2);
@@ -287,6 +298,8 @@ nav{
   letter-spacing:.5px;
   color:var(--texte2);
   cursor:pointer;transition:all .2s;
+  flex-shrink:0;
+  white-space:nowrap;
 }
 .puce:hover{border-color:var(--noir);color:var(--noir);}
 .puce.actif{background:var(--noir);border-color:var(--noir);color:var(--blanc);}
@@ -343,8 +356,8 @@ nav{
 @keyframes up{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
 
 .carte-aff{width:100%;aspect-ratio:2/3;background:var(--gris);position:relative;overflow:hidden;}
-.carte-aff img{width:100%;height:100%;object-fit:cover;transition:transform .5s;}
-.carte:hover .carte-aff img{transform:scale(1.05);}
+.carte-aff img{width:100%;height:100%;object-fit:cover;transition:transform .45s cubic-bezier(.2,.8,.2,1);}
+.carte:hover .carte-aff img{transform:scale(1.04);}
 .ph{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;}
 .ph-ico{font-size:32px;opacity:.15;}
 .ph-titre{font-size:13px;font-weight:800;color:var(--gris3);text-align:center;padding:0 12px;letter-spacing:.3px;}
@@ -357,6 +370,25 @@ nav{
   letter-spacing:1px;text-transform:uppercase;
   color:var(--blanc);backdrop-filter:blur(4px);
 }
+
+/* ── BOUTON FAVORI SUR CARTE ── */
+.btn-fav-carte{
+  position:absolute;top:10px;right:10px;
+  width:30px;height:30px;
+  border-radius:50%;
+  background:rgba(255,255,255,.88);
+  border:none;cursor:pointer;
+  font-size:15px;
+  color:var(--gris3);
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+  z-index:2;
+  backdrop-filter:blur(4px);
+  line-height:1;
+}
+.btn-fav-carte:hover{background:var(--blanc);transform:scale(1.1);}
+.btn-fav-carte.actif{color:#E53E3E;}
+.btn-fav-carte.actif:hover{color:#C53030;}
 .badge-dist{
   position:absolute;bottom:10px;right:10px;
   padding:4px 10px;border-radius:100px;
@@ -612,7 +644,7 @@ nav{
 const SUPABASE_URL='https://dgnmqlwjfedhndftqdlp.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnbm1xbHdqZmVkaG5kZnRxZGxwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTUwNDcsImV4cCI6MjA4OTA5MTA0N30.w_D2a89bmgJu6hBtIG7Y62sAULyuEsx7gBcmGfLGzKE';
 const supa=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let user=null,pieces=[],coords=null,filtre='',notesMap={};
+let user=null,pieces=[],coords=null,filtre='',notesMap={},favorisSet=new Set();
 
 function switchTab(t){
   document.querySelectorAll('.onglet').forEach((el,i)=>el.classList.toggle('actif',(i===0)===(t==='co')));
@@ -717,9 +749,10 @@ function askGeo(){
 async function loadPieces(){
   const g=document.getElementById('grille');
   g.innerHTML='<div class="loader"><div class="lp"></div><div class="lp"></div><div class="lp"></div></div>';
-  const[{data,error},{data:avisData}]=await Promise.all([
+  const[{data,error},{data:avisData},{data:favorisData}]=await Promise.all([
     supa.from('pieces').select(`id,titre,auteur,genre,affiche_url,created_at,representations(theatre_id,date_debut,prix_min,theatres(nom,ville,latitude,longitude))`).order('created_at',{ascending:false}).limit(60),
-    supa.from('avis').select('piece_id,note')
+    supa.from('avis').select('piece_id,note'),
+    user?supa.from('favoris').select('piece_id').eq('user_id',user.id):Promise.resolve({data:[]})
   ]);
   if(error){g.innerHTML=`<div class="vide"><div class="vide-titre">Erreur</div><div class="vide-desc">${error.message}</div></div>`;return;}
   // Construire un index note moyenne par piece_id — permet le tri "Mieux noté" sans requête supplémentaire
@@ -729,6 +762,7 @@ async function loadPieces(){
     notesMap[a.piece_id].total+=a.note;
     notesMap[a.piece_id].nb++;
   });
+  favorisSet=new Set((favorisData||[]).map(f=>f.piece_id));
   pieces=data||[];render(pieces);
 }
 
@@ -766,18 +800,36 @@ function render(list){
 function card(p,i){
   const rep=p.representations?.[0],th=rep?.theatres;
   const d=coords&&th?.latitude?distKm(coords,th):null;
+  const isFav=favorisSet.has(p.id);
   const aff=p.affiche_url?`<img src="${p.affiche_url}" alt="${p.titre}" loading="lazy">`:`<div class="ph"><div class="ph-ico">🎭</div><div class="ph-titre">${p.titre}</div></div>`;
   return`<div class="carte" style="animation-delay:${i*.04}s" onclick="openPiece('${p.id}')">
-    <div class="carte-aff">${aff}${p.genre?`<div class="badge-genre">${p.genre}</div>`:''}${d!==null?`<div class="badge-dist">${d<1?Math.round(d*1000)+'m':d.toFixed(1)+'km'}</div>`:''}</div>
+    <div class="carte-aff">${aff}${p.genre?`<div class="badge-genre">${p.genre}</div>`:''}${d!==null?`<div class="badge-dist">${d<1?Math.round(d*1000)+'m':d.toFixed(1)+'km'}</div>`:''}
+    <button class="btn-fav-carte${isFav?' actif':''}" onclick="toggleFavori('${p.id}',this,event)" title="${isFav?'Retirer des favoris':'Ajouter a voir'}">${isFav?'♥':'♡'}</button></div>
     <div class="carte-corps">
       <div class="carte-titre">${p.titre}</div>
       ${p.auteur?`<div class="carte-auteur">${p.auteur}</div>`:''}
       <div class="carte-pied">
         <div class="carte-lieu"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${th?th.nom:''}</div>
-        ${rep?.prix_min?`<div class="carte-prix">dès ${rep.prix_min}€</div>`:''}
+        ${rep?.prix_min?`<div class="carte-prix">des ${rep.prix_min}&euro;</div>`:''}
       </div>
     </div>
   </div>`;
+}
+
+async function toggleFavori(pieceId,btn,e){
+  e.stopPropagation();
+  if(!user){toast('Connectez-vous pour sauvegarder.');return;}
+  const estFav=btn.classList.contains('actif');
+  // Mise a jour optimiste : l'UI reagit immediatement
+  btn.classList.toggle('actif');
+  btn.textContent=estFav?'♡':'♥';
+  if(estFav){
+    favorisSet.delete(pieceId);
+    await supa.from('favoris').delete().eq('user_id',user.id).eq('piece_id',pieceId);
+  } else {
+    favorisSet.add(pieceId);
+    await supa.from('favoris').insert({user_id:user.id,piece_id:pieceId});
+  }
 }
 
 function distKm(a,b){const R=6371,dL=(b.latitude-a.lat)*Math.PI/180,dG=(b.longitude-a.lng)*Math.PI/180,x=Math.sin(dL/2)**2+Math.cos(a.lat*Math.PI/180)*Math.cos(b.latitude*Math.PI/180)*Math.sin(dG/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
